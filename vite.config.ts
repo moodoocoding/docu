@@ -14,6 +14,7 @@ export default defineConfig({
         settings: resolve(__dirname, 'settings.html'),
         login: resolve(__dirname, 'login.html'),
         history: resolve(__dirname, 'history.html'),
+        contacts: resolve(__dirname, 'contacts.html'),
       },
     },
   },

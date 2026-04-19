@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주소록 관리 - 학교문서AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="contacts.css">
+  <style>
+    /* 공통 헤더 스타일 복제 */
+    body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f8f9fa; }
+    header.main-header { background: #fff; border-bottom: 1px solid #e8eaf0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.06); height: 68px; display: flex; align-items: center; }
+    .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; width: 100%; display: flex; align-items: center; gap: 48px; }
+    .logo { font-size: 20px; font-weight: 800; color: #1a1a2e; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg,#4f46e5,#7c3aed); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+    nav { display: flex; gap: 24px; flex: 1; }
+    nav a { text-decoration: none; color: #444; font-size: 14px; font-weight: 500; padding: 8px 0; transition: all .2s; }
+    nav a:hover { color: #4f46e5; }
+    .header-actions { display: flex; gap: 8px; margin-left: auto; }
+    .header-btn { background: #4f46e5; color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
+    
+    /* 주소록 전용 스타일 보정 */
+    .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .contacts-header { margin-bottom: 30px; text-align: center; }
+    .contacts-header h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 10px; }
+    .contacts-header p { color: #666; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">A</div>
+        학교문서AI
+      </a>
+      <nav>
+        <a href="create.html?type=GONGMUN">에듀파인</a>
+        <a href="create.html?type=PLAN">계획서</a>
+        <a href="create.html?type=NEWSLETTER">가정통신문</a>
+        <a href="create.html?type=MESSAGE">문자</a>
+        <a href="create.html?type=REPORT">보고서</a>
+        <a href="create.html?type=PUMUI">품의서</a>
+        <a href="create.html?type=MEETING_MINUTES">회의록</a>
+        <a href="contacts.html" style="color: #4f46e5; font-weight: 700;">주소록</a>
+      </nav>
+      <div class="header-actions">
+        <a class="header-btn" href="settings.html">학교 설정</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="contacts-header">
+      <h1>구글 주소록 생성기</h1>
+      <p>엑셀 데이터를 붙여넣거나 파일을 업로드하여 구글 주소록용 CSV를 만드세요.</p>
+    </div>
+
+    <section class="grid-section">
+      <div class="bulk-label-container" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+        <input type="text" id="bulk-label-input" placeholder="일괄 적용할 라벨 입력 (예: 2026학년도)">
+        <button id="bulk-label-btn" class="btn btn-secondary">일괄 적용</button>
+      </div>
+      <div class="grid-header">
+        <div class="header-cell">이름 (Name)</div>
+        <div class="header-cell">연락처 (Phone)</div>
+        <div class="header-cell">라벨 (Label)</div>
+        <div class="header-cell action-cell"></div>
+      </div>
+      <div id="data-grid" class="data-grid">
+        <!-- Rows will be injected here -->
+      </div>
+      
+      <div class="actions-row">
+        <div class="actions-left">
+          <button id="add-row-btn" class="btn btn-secondary">행 추가</button>
+          <input type="file" id="upload-file" accept=".csv, .xlsx, .xls" style="display: none;">
+          <button id="upload-btn" class="btn btn-secondary">엑셀 업로드</button>
+        </div>
+        <button id="download-btn" class="btn btn-primary">CSV 다운로드</button>
+      </div>
+    </section>
+
+    <div id="toast-container"></div>
+  </main>
+
+  <script src="contacts.js"></script>
+</body>
+</html>
