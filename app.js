@@ -17,7 +17,7 @@ import { copyHtmlForHwp, downloadMarkdown, printDocument } from './export.js';
     MESSAGE: { name: '학부모 문자', desc: 'SMS/LMS 알림 문자를 자동 작성합니다', placeholder: '[수신] 5학년 1반 학부모\n[주요내용] 내일(목) 오전 10시 학부모 총회 및 공개수업 (교실)' },
     PUMUI: { name: '지출품의서', desc: '내부 기안용 지출품의서를 자동 작성합니다', placeholder: '[예산과목] 디지털 선도학교 운영비\n[구매품목] 태블릿 거치대 25개, 고속 충전 케이블\n[금액] 총 50만 원 이내\n[목적] 디지털 교과서 및 에듀테크 활용 수업 환경 구축' },
     MEETING_MINUTES: { name: '협의회 회의록', desc: '회의록을 표 형식으로 자동 작성합니다', placeholder: '[회의명] 5학년 학년협의회\n[안건 1] 1학기 지필평가 일정 조정 (결정사항: 6월 3주차로 연기)\n[안건 2] 다채움 플랫폼 활용 방안 (결정사항: 학급별 주 1회 이상 필수 활용)\n[요청사항] 회의록 기본 양식에 맞춰 깔끔하게 정리' },
-    PROMOTION: { name: '홍보/보도자료', desc: '보도자료 + SNS 홍보글을 동시 생성합니다', placeholder: '[주제] AI 시대, 교실의 변화와 교사의 찐 역할\n[대상] 예비 교사\n[핵심내용] 에듀테크 도구 활용법, 교사의 디지털 퍼실리테이터 역할\n[요청사항] 시선을 끄는 캐치프레이즈 형태의 제목 포함' }
+    PROMOTION: { name: '보도자료', desc: '보도자료 + SNS 홍보글을 동시 생성합니다', placeholder: '[주제] AI 시대, 교실의 변화와 교사의 찐 역할\n[대상] 예비 교사\n[핵심내용] 에듀테크 도구 활용법, 교사의 디지털 퍼실리테이터 역할\n[요청사항] 시선을 끄는 캐치프레이즈 형태의 제목 포함' }
   };
 
   const meta = DOC_META[docType] || DOC_META.GONGMUN;
