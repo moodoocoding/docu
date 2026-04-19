@@ -1,45 +1,26 @@
 :root {
-    --bg-color: #0f172a;
-    --surface-color: #1e293b;
-    --border-color: #334155;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --primary-color: #3b82f6;
-    --primary-hover: #2563eb;
-    --secondary-color: #475569;
-    --secondary-hover: #334155;
-    --danger-color: #ef4444;
-    --danger-hover: #dc2626;
-    --focus-ring: rgba(59, 130, 246, 0.5);
-    --border-radius: 12px;
-    --transition: all 0.2s ease-in-out;
+    --contacts-bg: #ffffff;
+    --contacts-surface: #ffffff;
+    --contacts-border: #e2e8f0;
+    --contacts-text: #1a1a2e;
+    --contacts-text-sec: #64748b;
+    --contacts-primary: #4f46e5;
+    --contacts-primary-hover: #4338ca;
+    --contacts-secondary: #94a3b8;
+    --contacts-secondary-hover: #64748b;
+    --contacts-danger: #ef4444;
+    --contacts-radius: 12px;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    padding: 2rem 1rem;
-    line-height: 1.5;
-}
-
-.container {
+.contacts-app-container {
     width: 100%;
-    max-width: 900px;
-    background: var(--surface-color);
+    max-width: 1000px;
+    margin: 40px auto;
+    background: var(--contacts-surface);
     border-radius: 20px;
-    padding: 2.5rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border-color);
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--contacts-border);
 }
 
 header {
@@ -57,7 +38,7 @@ header h1 {
 }
 
 header p {
-    color: var(--text-secondary);
+    color: var(--contacts-text-sec);
     font-size: 1rem;
 }
 
@@ -73,7 +54,7 @@ header p {
     gap: 1rem;
     padding: 0 1rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--contacts-text-sec);
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -96,11 +77,11 @@ header p {
     background: transparent;
 }
 .data-grid::-webkit-scrollbar-thumb {
-    background: var(--border-color);
+    background: var(--contacts-border);
     border-radius: 10px;
 }
 .data-grid::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary-color);
+    background: var(--contacts-secondary-hover);
 }
 
 .grid-row {
@@ -108,46 +89,46 @@ header p {
     grid-template-columns: 1fr 1fr 1fr 50px;
     gap: 1rem;
     align-items: center;
-    background: rgba(15, 23, 42, 0.5);
+    background: #fdfdfd;
     padding: 0.5rem;
-    border-radius: var(--border-radius);
-    border: 1px solid transparent;
-    transition: var(--transition);
+    border-radius: var(--contacts-radius);
+    border: 1px solid var(--contacts-border);
+    transition: all 0.2s;
 }
 
 .grid-row:hover {
-    border-color: var(--border-color);
-    background: rgba(30, 41, 59, 0.8);
+    border-color: var(--contacts-primary);
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .grid-row input {
     width: 100%;
     background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    border: 1px solid var(--contacts-border);
+    color: var(--contacts-text);
     padding: 0.75rem 1rem;
     border-radius: 8px;
     font-family: inherit;
     font-size: 0.95rem;
     outline: none;
-    transition: var(--transition);
+    transition: all 0.2s;
 }
 
 .grid-row input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--focus-ring);
-    background: var(--surface-color);
+    border-color: var(--contacts-primary);
+    background: #fff;
 }
 
 .grid-row input::placeholder {
-    color: var(--text-secondary);
+    color: var(--contacts-text-sec);
     opacity: 0.5;
 }
 
 .btn-icon {
     background: transparent;
     border: none;
-    color: var(--text-secondary);
+    color: var(--contacts-text-sec);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -155,11 +136,11 @@ header p {
     width: 36px;
     height: 36px;
     border-radius: 8px;
-    transition: var(--transition);
+    transition: all 0.2s;
 }
 
 .btn-icon:hover {
-    color: var(--danger-color);
+    color: var(--contacts-danger);
     background: rgba(239, 68, 68, 0.1);
 }
 
@@ -169,7 +150,7 @@ header p {
     align-items: center;
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--contacts-border);
 }
 
 .btn {
@@ -182,36 +163,29 @@ header p {
     font-size: 0.95rem;
     cursor: pointer;
     border: none;
-    transition: var(--transition);
+    transition: all 0.2s;
     font-family: inherit;
 }
 
 .btn-primary {
-    background: var(--primary-color);
+    background: var(--contacts-primary);
     color: white;
-    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
 }
 
 .btn-primary:hover {
-    background: var(--primary-hover);
+    background: var(--contacts-primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.btn-primary:active {
-    transform: translateY(1px);
 }
 
 .btn-secondary {
-    background: var(--secondary-color);
+    background: var(--contacts-secondary);
     color: white;
 }
 
 .btn-secondary:hover {
-    background: var(--secondary-hover);
+    background: var(--contacts-secondary-hover);
 }
 
-/* Toasts */
 #toast-container {
     position: fixed;
     bottom: 2rem;
@@ -223,12 +197,12 @@ header p {
 }
 
 .toast {
-    background: var(--surface-color);
-    color: var(--text-primary);
+    background: #fff;
+    color: var(--contacts-text);
     padding: 1rem 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--contacts-primary);
     animation: slideIn 0.3s ease-out forwards;
     display: flex;
     align-items: center;
@@ -240,12 +214,8 @@ header p {
     to { transform: translateX(0); opacity: 1; }
 }
 
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
 .actions-left {
     display: flex;
     gap: 1rem;
 }
+
