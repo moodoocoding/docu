@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문서 작성 - 학교문서AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="create.css">
+</head>
+
+<body>
+
+  <!-- 메인 헤더 -->
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="index.html">
+        <div class="logo-icon">📋</div>
+        학교문서AI
+      </a>
+      <nav>
+        <a href="create.html?type=GONGMUN">에듀파인</a>
+        <a href="create.html?type=PLAN">계획서</a>
+        <a href="create.html?type=NEWSLETTER">가정통신문</a>
+        <a href="create.html?type=MESSAGE">문자</a>
+        <a href="create.html?type=PROMOTION">홍보</a>
+        <a href="create.html?type=REPORT">보고서</a>
+        <a href="create.html?type=PUMUI">품의서</a>
+        <a href="create.html?type=MEETING_MINUTES">회의록</a>
+      </nav>
+      <div class="header-actions">
+        <a class="header-btn" href="settings.html">학교 설정</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨테이너 -->
+  <div class="main-container">
+
+    <!-- 좌측: 입력 폼 -->
+    <div class="form-panel">
+      <div class="form-header">
+        <div class="form-type-badge" id="typeBadge">에듀파인</div>
+        <h2 id="formTitle">에듀파인 작성</h2>
+        <p id="formDesc">AI가 공문서 양식에 맞게 자동으로 작성합니다</p>
+      </div>
+
+      <div class="form-body" id="formBody">
+
+        <!-- 공통: 학년도 -->
+        <div class="field">
+          <label>학년도</label>
+          <input type="text" id="schoolYear" value="2026" placeholder="예: 2026">
+        </div>
+
+        <!-- 에듀파인 전용 -->
+        <div class="field gongmun-field">
+          <label>공문 방향</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="gongmunType" value="INTERNAL" checked> 내부결재</label>
+            <label class="radio-item"><input type="radio" name="gongmunType" value="EXTERNAL"> 외부발송</label>
+          </div>
+        </div>
+
+        <div class="field gongmun-field">
+          <label>복잡도</label>
+          <div class="complexity-group">
+            <button class="complexity-btn" data-val="SIMPLE">간단</button>
+            <button class="complexity-btn active" data-val="MEDIUM">중간</button>
+            <button class="complexity-btn" data-val="DETAILED">상세</button>
+          </div>
+        </div>
+
+        <!-- 계획서/보고서/홍보 전용: 페이지 수 -->
+        <div class="field page-field" style="display:none;">
+          <label>분량 (A4 페이지 수)</label>
+          <input type="range" id="pageCount" min="1" max="10" value="2">
+          <span class="range-val" id="pageVal">2장</span>
+        </div>
+
+        <!-- 품의서 전용 -->
+        <div class="field pumui-field" style="display:none;">
+          <label>품의 유형</label>
+          <select id="pumuiType">
+            <option value="GOODS">물품 구입</option>
+            <option value="ALLOWANCE">수당 지급</option>
+            <option value="BIZ_PROMOTION">업무추진비</option>
+          </select>
+        </div>
+
+        <!-- 문자 전용 -->
+        <div class="field message-field" style="display:none;">
+          <label>문자 유형</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="msgType" value="SMS" checked> 단문 (SMS)</label>
+            <label class="radio-item"><input type="radio" name="msgType" value="MMS"> 중문 (MMS)</label>
+            <label class="radio-item"><input type="radio" name="msgType" value="LMS"> 장문 (LMS)</label>
+          </div>
+        </div>
+        <div class="field message-field" style="display:none;">
+          <label>발송 구분</label>
+          <div class="radio-group">
+            <label class="radio-item"><input type="radio" name="msgNature" value="INITIAL" checked> 최초 발송</label>
+            <label class="radio-item"><input type="radio" name="msgNature" value="REPLY"> 문의 회신</label>
+            <label class="radio-item"><input type="radio" name="msgNature" value="TEACHER_REPLY"> 학부모 회신</label>
+          </div>
+        </div>
+
+        <!-- 공통: 요청 내용 -->
+        <div class="field">
+          <label>작성 요청 내용 <span class="req">*필수</span></label>
+          <textarea id="promptText" rows="6"
+            placeholder="예: 2026학년도 학교 체육대회를 5월 15일에 운동장에서 개최합니다. 전교생 대상, 학부모 참관 가능합니다."></textarea>
+        </div>
+
+        <!-- 공통: 파일 첨부 -->
+        <div class="field">
+          <label>파일 첨부 (선택)</label>
+          <div class="file-drop" id="fileDrop">
+            <span>📎 클릭하거나 파일을 끌어다 놓으세요</span>
+            <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.hwp">
+          </div>
+          <div class="file-list" id="fileList"></div>
+        </div>
+
+        <!-- 생성 버튼 -->
+        <button class="generate-btn" id="generateBtn">
+          <span class="btn-text">✨ AI 문서 생성</span>
+          <span class="btn-loading" style="display:none;">
+            <span class="spinner"></span>
+            <span class="loading-msg" id="loadingMsg">생성 중...</span>
+          </span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- 우측: 미리보기 -->
+    <div class="preview-panel">
+      <div class="preview-header">
+        <h3 id="previewTitle">📄 문서 미리보기</h3>
+        <div class="preview-actions">
+          <button class="action-btn" id="btnCopyHwp" disabled>📋 HWP 복사</button>
+          <button class="action-btn" id="btnDownloadMd" disabled>📥 MD 다운로드</button>
+          <button class="action-btn" id="btnPrint" disabled>🖨️ 인쇄</button>
+        </div>
+      </div>
+      <div class="preview-body" id="previewBody">
+        <!-- 기본 A4 스타일 -->
+        <div class="a4-page" id="a4Preview">
+          <div class="preview-content" id="previewContent">
+            <div class="empty-preview">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <p>요청 내용을 입력하고 <strong>AI 문서 생성</strong> 버튼을 눌러주세요.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 휴대폰 스타일 (문자 전용) -->
+        <div class="phone-mockup" id="phonePreview" style="display:none;">
+          <div class="phone-header">메시지</div>
+          <div class="phone-body" id="phoneContent">
+            <!-- 메시지 버블이 동적으로 들어감 -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 토스트 -->
+    <div class="toast" id="toast"></div>
+
+    <script type="module" src="app.js"></script>
+    <script type="module" src="auth.js"></script>
+</body>
+
+</html>

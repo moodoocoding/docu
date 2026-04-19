@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>작성 내역 - 학교문서AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard',sans-serif;background:#f5f6fa;color:#1a1a2e;min-height:100vh;}
+header{background:#fff;border-bottom:1px solid #e8eaf0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:36px;}
+.logo{font-size:18px;font-weight:800;color:#1a1a2e;text-decoration:none;display:flex;align-items:center;gap:8px;}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;}
+.header-btn{margin-left:auto;background:#4f46e5;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;}
+
+.container{max-width:900px;margin:40px auto;padding:0 24px;}
+.page-title{font-size:28px;font-weight:800;margin-bottom:8px;}
+.page-desc{font-size:14px;color:#888;margin-bottom:32px;}
+
+.empty{text-align:center;padding:80px 20px;color:#aaa;}
+.empty .icon{font-size:64px;margin-bottom:16px;opacity:.5;}
+
+.history-list{display:flex;flex-direction:column;gap:12px;}
+.history-card{background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;border:2px solid transparent;text-decoration:none;color:inherit;}
+.history-card:hover{border-color:#4f46e5;transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.12);}
+.h-type{background:#ede9fe;color:#7c3aed;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;}
+.h-body{flex:1;min-width:0;}
+.h-body .h-preview{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.h-body .h-date{font-size:12px;color:#999;}
+.h-actions{display:flex;gap:6px;}
+.h-btn{padding:6px 12px;border:1.5px solid #d0d0dc;border-radius:6px;background:#fff;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;}
+.h-btn:hover{border-color:#4f46e5;color:#4f46e5;background:#f8f7ff;}
+.h-btn.del{color:#ef4444;border-color:#fecaca;}
+.h-btn.del:hover{background:#fef2f2;border-color:#ef4444;}
+
+/* 모달 */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;justify-content:center;align-items:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:16px;width:90%;max-width:800px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-header{padding:16px 24px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:16px;font-weight:700;}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#888;}
+.modal-body{padding:24px;overflow-y:auto;flex:1;font-family:'Dotum',sans-serif;font-size:13pt;line-height:1.6;color:#000;}
+.modal-footer{padding:12px 24px;border-top:1px solid #eee;display:flex;gap:8px;justify-content:flex-end;}
+.modal-btn{padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid #d0d0dc;background:#fff;transition:all .2s;}
+.modal-btn.primary{background:#4f46e5;color:#fff;border-color:#4f46e5;}
+.modal-btn:hover{opacity:.85;}
+
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:#1a1a2e;color:#fff;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:500;opacity:0;transition:all .3s;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html"><div class="logo-icon">📋</div>학교문서AI</a>
+    <a class="header-btn" href="create.html?type=GONGMUN">📝 문서 작성</a>
+  </div>
+</header>
+
+<div class="container">
+  <h1 class="page-title">📂 작성 내역</h1>
+  <p class="page-desc">최근 작성한 문서 목록 (최대 50개, 브라우저에 저장)</p>
+  <div id="historyContainer"></div>
+</div>
+
+<!-- 미리보기 모달 -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">문서 미리보기</h3>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="modal-btn" id="modalCopy">📋 HWP 복사</button>
+      <button class="modal-btn" id="modalMd">📥 MD 다운로드</button>
+      <button class="modal-btn primary" id="modalCloseBtn">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="history.js"></script>
+<script type="module" src="auth.js"></script>
+</body>
+</html>

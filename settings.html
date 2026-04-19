@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학교 설정 - 학교문서AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard',sans-serif;background:#f5f6fa;color:#1a1a2e;min-height:100vh;}
+header{background:#fff;border-bottom:1px solid #e8eaf0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:36px;}
+.logo{font-size:18px;font-weight:800;color:#1a1a2e;text-decoration:none;display:flex;align-items:center;gap:8px;}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;}
+.header-btn{margin-left:auto;background:#4f46e5;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;}
+
+.container{max-width:640px;margin:40px auto;padding:0 24px;}
+.page-title{font-size:28px;font-weight:800;margin-bottom:8px;}
+.page-desc{font-size:14px;color:#888;margin-bottom:32px;}
+
+.card{background:#fff;border-radius:16px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.06);margin-bottom:24px;}
+.card h3{font-size:18px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #ede9fe;color:#4f46e5;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;}
+.field .hint{font-size:11px;color:#999;margin-top:4px;}
+.field input,.field textarea{width:100%;padding:10px 14px;border:1.5px solid #e0e0e8;border-radius:8px;font-size:14px;font-family:inherit;transition:border-color .2s;background:#fafafe;}
+.field input:focus,.field textarea:focus{outline:none;border-color:#4f46e5;background:#fff;}
+
+/* 학교 검색 */
+.search-wrapper{position:relative;}
+.search-input-row{display:flex;gap:8px;}
+.search-input-row input{flex:1;}
+.search-btn{padding:10px 18px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s;}
+.search-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(79,70,229,0.35);}
+.search-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+.search-btn .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.search-results{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #e0e0e8;border-top:none;border-radius:0 0 12px 12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:300px;overflow-y:auto;z-index:50;display:none;}
+.search-results.show{display:block;}
+.search-result-item{padding:12px 16px;cursor:pointer;transition:background .15s;border-bottom:1px solid #f0f0f5;}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:#f5f3ff;}
+.search-result-item .school-name{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:2px;}
+.search-result-item .school-meta{font-size:12px;color:#888;display:flex;gap:8px;flex-wrap:wrap;}
+.search-result-item .school-meta span{display:inline-flex;align-items:center;gap:3px;}
+.search-result-item .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-left:6px;}
+.badge-elem{background:#dbeafe;color:#2563eb;}
+.badge-mid{background:#d1fae5;color:#059669;}
+.badge-high{background:#fef3c7;color:#d97706;}
+.badge-etc{background:#f3e8ff;color:#7c3aed;}
+
+.search-no-result{padding:20px 16px;text-align:center;color:#999;font-size:13px;}
+
+.auto-filled{background:#f0fdf4 !important;border-color:#86efac !important;}
+.auto-filled-badge{display:inline-block;font-size:10px;background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:10px;margin-left:8px;font-weight:500;}
+
+.save-btn{width:100%;padding:14px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.save-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,0.4);}
+
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(100px);background:#1a1a2e;color:#fff;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:500;opacity:0;transition:all .3s;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.danger-zone{border:2px solid #fecaca;background:#fff5f5;}
+.danger-zone h3{color:#ef4444;border-bottom-color:#fecaca;}
+.reset-btn{width:100%;padding:12px;background:#fff;color:#ef4444;border:2px solid #ef4444;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.reset-btn:hover{background:#ef4444;color:#fff;}
+</style>
+<script type="module" src="auth.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html"><div class="logo-icon">📋</div>학교문서AI</a>
+    <a class="header-btn" href="create.html?type=GONGMUN">📝 문서 작성</a>
+  </div>
+</header>
+
+<div class="container">
+  <h1 class="page-title">⚙️ 학교 정보 설정</h1>
+  <p class="page-desc">이 정보는 브라우저에만 저장되며 외부로 전송되지 않습니다</p>
+
+  <!-- 학교 정보 -->
+  <div class="card">
+    <h3>🏫 학교 정보</h3>
+    <div class="field">
+      <label>학교명 검색</label>
+      <div class="search-wrapper">
+        <div class="search-input-row">
+          <input type="text" id="schoolSearch" placeholder="학교명을 입력하고 검색 버튼을 누르세요" autocomplete="off">
+          <button class="search-btn" id="searchBtn">🔍 검색</button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="hint">예: "서울", "한빛초" 등 학교명 일부만 입력해도 검색됩니다 (나이스 Open API)</div>
+    </div>
+    <div class="field">
+      <label>학교명</label>
+      <input type="text" id="schoolName" placeholder="검색으로 자동 입력됩니다" readonly>
+    </div>
+    <div class="field">
+      <label>교육청</label>
+      <input type="text" id="eduOffice" placeholder="자동 입력" readonly>
+    </div>
+    <div class="field">
+      <label>기관코드</label>
+      <input type="text" id="orgCode" placeholder="자동 입력" readonly>
+    </div>
+    <div class="field">
+      <label>학교 주소</label>
+      <input type="text" id="schoolAddr" placeholder="자동 입력" readonly>
+    </div>
+    <div class="field">
+      <label>전화번호</label>
+      <input type="text" id="schoolPhone" placeholder="자동 입력" readonly>
+    </div>
+    <div class="field">
+      <label>팩스번호</label>
+      <input type="text" id="schoolFax" placeholder="자동 입력" readonly>
+    </div>
+    <div class="field">
+      <label>홈페이지</label>
+      <input type="text" id="schoolWeb" placeholder="자동 입력" readonly>
+    </div>
+  </div>
+
+  <!-- 담당자 -->
+  <div class="card">
+    <h3>👤 담당자 정보</h3>
+    <div class="field">
+      <label>담당자 성명</label>
+      <input type="text" id="staffName" placeholder="예: 김선생">
+    </div>
+    <div class="field">
+      <label>직위</label>
+      <input type="text" id="staffTitle" placeholder="예: 교사 / 교무부장">
+    </div>
+    <div class="field">
+      <label>연락처</label>
+      <input type="text" id="staffPhone" placeholder="예: 010-1234-5678">
+    </div>
+  </div>
+
+  <button class="save-btn" id="saveBtn">💾 설정 저장</button>
+
+  <!-- 초기화 -->
+  <div class="card danger-zone" style="margin-top:32px;">
+    <h3>⚠️ 데이터 초기화</h3>
+    <div class="field">
+      <label>모든 설정과 작성 내역을 삭제합니다</label>
+    </div>
+    <button class="reset-btn" id="resetBtn">🗑️ 전체 데이터 초기화</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="settings.js"></script>
+</body>
+</html>

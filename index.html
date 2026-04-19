@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학교 행정 문서 작성 서비스</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard',sans-serif;background:#f5f6fa;color:#1a1a2e;}
+
+/* 상단 유틸리티 바 */
+.util-bar{background:#1a1a2e;padding:8px 0;font-size:12px;color:#aaa;}
+.util-bar .inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;justify-content:flex-end;gap:20px;}
+.util-bar a{color:#aaa;text-decoration:none;}
+.util-bar a:hover{color:#fff;}
+
+/* 메인 헤더 */
+header{background:#fff;border-bottom:1px solid #e8eaf0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;gap:48px;}
+.logo{font-size:20px;font-weight:800;color:#1a1a2e;text-decoration:none;display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+nav{display:flex;gap:32px;flex:1;}
+nav a{text-decoration:none;color:#444;font-size:15px;font-weight:500;padding:8px 0;border-bottom:2px solid transparent;transition:all .2s;}
+nav a:hover{color:#4f46e5;border-bottom-color:#4f46e5;}
+.header-actions{display:flex;gap:8px;margin-left:auto;}
+.header-btn{background:#4f46e5;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .2s;}
+.header-btn:hover{background:#4338ca;}
+
+/* 히어로 섹션 */
+.hero{background:linear-gradient(135deg,#1a1a2e 0%,#2d2b55 40%,#4f46e5 100%);padding:80px 0 100px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-50%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,0.3) 0%,transparent 70%);border-radius:50%;}
+.hero-inner{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,0.15);color:#c4b5fd;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:20px;border:1px solid rgba(196,181,253,0.3);}
+.hero h1{font-size:48px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:20px;}
+.hero h1 span{color:#a78bfa;}
+.hero p{font-size:18px;color:rgba(255,255,255,0.75);margin-bottom:40px;line-height:1.7;max-width:560px;}
+.hero-btns{display:flex;gap:16px;}
+.btn-primary{background:#fff;color:#4f46e5;padding:14px 32px;border-radius:10px;font-size:16px;font-weight:700;text-decoration:none;transition:all .2s;}
+.btn-primary:hover{background:#f0f0ff;transform:translateY(-2px);}
+.btn-outline{background:transparent;color:#fff;padding:14px 32px;border-radius:10px;font-size:16px;font-weight:600;text-decoration:none;border:2px solid rgba(255,255,255,0.4);transition:all .2s;}
+.btn-outline:hover{background:rgba(255,255,255,0.1);}
+
+/* 문서 유형 카드 섹션 */
+.section{padding:80px 0;}
+.section-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.section-header{text-align:center;margin-bottom:48px;}
+.section-tag{display:inline-block;background:#ede9fe;color:#7c3aed;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:16px;}
+.section-header h2{font-size:36px;font-weight:800;color:#1a1a2e;margin-bottom:12px;}
+.section-header p{font-size:16px;color:#666;line-height:1.7;}
+
+.doc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.doc-card{background:#fff;border-radius:16px;padding:28px 24px;cursor:pointer;transition:all .25s;border:2px solid transparent;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-decoration:none;color:inherit;display:block;}
+.doc-card:hover{border-color:#4f46e5;transform:translateY(-4px);box-shadow:0 12px 40px rgba(79,70,229,0.15);}
+.doc-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;}
+.doc-card h3{font-size:17px;font-weight:700;margin-bottom:8px;color:#1a1a2e;}
+.doc-card p{font-size:13px;color:#666;line-height:1.6;}
+.doc-arrow{margin-top:16px;font-size:13px;color:#4f46e5;font-weight:600;}
+
+.ic1{background:#ede9fe;}
+.ic2{background:#dbeafe;}
+.ic3{background:#dcfce7;}
+.ic4{background:#fef3c7;}
+.ic5{background:#fce7f3;}
+.ic6{background:#e0f2fe;}
+.ic7{background:#f3e8ff;}
+.ic8{background:#fff1f2;}
+
+/* 특징 섹션 */
+.features{background:#fff;padding:80px 0;}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:48px;}
+.feature-item{text-align:center;padding:32px 24px;}
+.feat-icon{width:64px;height:64px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:20px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.feature-item h3{font-size:18px;font-weight:700;margin-bottom:10px;color:#1a1a2e;}
+.feature-item p{font-size:14px;color:#666;line-height:1.7;}
+
+/* 공지 섹션 */
+.announce{padding:60px 0;background:#f8f9ff;}
+.announce-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;}
+.announce-box h3{font-size:20px;font-weight:700;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #4f46e5;}
+.announce-list{list-style:none;}
+.announce-list li{padding:14px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
+.announce-list li a{text-decoration:none;color:#333;font-size:14px;font-weight:500;transition:color .2s;}
+.announce-list li a:hover{color:#4f46e5;}
+.announce-list li span{font-size:12px;color:#999;white-space:nowrap;margin-left:12px;}
+
+/* 푸터 */
+footer{background:#1a1a2e;color:#aaa;padding:48px 0;}
+.footer-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+.footer-brand .f-logo{font-size:18px;font-weight:800;color:#fff;margin-bottom:12px;}
+.footer-brand p{font-size:13px;line-height:1.7;color:#666;}
+.footer-col h4{font-size:14px;font-weight:700;color:#fff;margin-bottom:16px;}
+.footer-col ul{list-style:none;}
+.footer-col ul li{margin-bottom:10px;}
+.footer-col ul li a{color:#888;font-size:13px;text-decoration:none;transition:color .2s;}
+.footer-col ul li a:hover{color:#fff;}
+.footer-bottom{border-top:1px solid #2d2d4e;padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#555;}
+</style>
+</head>
+<body>
+
+<!-- 유틸리티 바 -->
+<div class="util-bar">
+  <div class="inner">
+    <a href="settings.html">⚙️ 학교 정보 설정</a>
+    <a href="#">사용 가이드</a>
+    <a href="#">문의하기</a>
+  </div>
+</div>
+
+<!-- 메인 헤더 -->
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <div class="logo-icon">📋</div>
+      학교문서AI
+    </a>
+    <nav>
+      <a href="create.html?type=GONGMUN">에듀파인</a>
+      <a href="create.html?type=PLAN">계획서</a>
+      <a href="create.html?type=REPORT">보고서</a>
+      <a href="create.html?type=NEWSLETTER">가정통신문</a>
+      <a href="create.html?type=PUMUI">품의서</a>
+      <a href="history.html">작성 내역</a>
+    </nav>
+    <div class="header-actions">
+      <a class="header-btn" href="settings.html">학교 설정</a>
+    </div>
+  </div>
+</header>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">✨ AI 기반 공문서 자동 작성</div>
+    <h1>공문서 작성,<br><span>AI와 함께</span> 쉽고 빠르게</h1>
+    <p>대한민국 행정업무운영 편람을 완벽히 준수하는 공문서를 AI가 자동으로 생성합니다. 한글(HWP)에 바로 붙여넣기 가능한 형식으로 제공됩니다.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="create.html?type=GONGMUN">📝 문서 작성 시작</a>
+      <a class="btn-outline" href="settings.html">⚙️ 학교 정보 설정</a>
+    </div>
+  </div>
+</section>
+
+<!-- 문서 유형 -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">8가지 문서 유형</div>
+      <h2>필요한 문서를 선택하세요</h2>
+      <p>AI가 공문서 양식에 맞게 자동으로 작성해 드립니다</p>
+    </div>
+    <div class="doc-grid">
+      <a class="doc-card" href="create.html?type=GONGMUN">
+        <div class="doc-icon ic1">📄</div>
+        <h3>에듀파인</h3>
+        <p>내부결재 및 외부발송용 공문서. 3단계 복잡도 선택 가능</p>
+        <div class="doc-arrow">작성하기 →</div>
+      </a>
+      <a class="doc-card" href="create.html?type=PLAN">
+        <div class="doc-icon ic2">📊</div>
+        <h3>계획서</h3>
+        <p>추진배경·목적·세부계획·예산·기대효과 포함 운영 계획</p>
+        <div class="doc-arrow">작성하기 →</div>
+      </a>
+      <a class="doc-card" href="create.html?type=REPORT">
+        <div class="doc-icon ic3">📈</div>
+        <h3>보고서</h3>
+        <p>행사·사업 결과 보고서. 계획서 파일 업로드 시 자동 생성</p>
+        <div class="doc-arrow">작성하기 →</div>
+      </a>
+      <a class="doc-card" href="create.html?type=NEWSLETTER">
+        <div class="doc-icon ic4">✉️</div>
+        <h3>가정통신문</h3>
+        <p>학부모 대상 공식 안내문. 계절 인사 및 격식체 자동 적용</p>
+        <div class="doc-arrow">작성하기 →</div>
+      </a>
+      <a class="doc-card" href="create.html?type=MESSAGE">
+        <div class="doc-icon ic5">💬</div>
+        <h3>학부모 안내 문자</h3>
+        <p>SMS(40자) / LMS(1000자) 모바일 최적화 알림 문자</p>
+        <div class="doc-arrow">작성하기 →</div>
+      </a>
+      <a class="doc-card" href="create.html?type=PUMUI">
+        <div class="doc-icon ic6">💰</div>
+        <h3>지출품의서</h3>
+        <p>물품·수당·업무추진비 유형별 내부 기안 품의서</p>
+        <div class="doc-arrow">작성하기 →</div>
+      </a>
+      <a class="doc-card" href="create.html?type=MEETING_MINUTES">
+        <div class="doc-icon ic7">🗒️</div>
+        <h3>협의회 회의록</h3>
+        <p>각종 위원회·협의회 회의록. 표 형식 자동 생성</p>
+        <div class="doc-arrow">작성하기 →</div>
+      </a>
+      <a class="doc-card" href="create.html?type=PROMOTION">
+        <div class="doc-icon ic8">📣</div>
+        <h3>홍보/보도자료</h3>
+        <p>언론 보도자료 + SNS 홍보글 동시 생성</p>
+        <div class="doc-arrow">작성하기 →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 특징 -->
+<section class="features">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">주요 기능</div>
+      <h2>왜 학교문서AI인가요?</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feat-icon">📋</div>
+        <h3>행정편람 완벽 준수</h3>
+        <p>1단계(1.)부터 7단계(①)까지 들여쓰기·항목기호 체계를 자동 적용합니다</p>
+      </div>
+      <div class="feature-item">
+        <div class="feat-icon">📝</div>
+        <h3>HWP 바로 붙여넣기</h3>
+        <p>생성된 HTML 문서를 한컴 한글에 그대로 붙여넣으면 서식이 유지됩니다</p>
+      </div>
+      <div class="feature-item">
+        <div class="feat-icon">📥</div>
+        <h3>Markdown 다운로드</h3>
+        <p>.md 파일로 내보내어 다양한 편집 환경에서 활용할 수 있습니다</p>
+      </div>
+      <div class="feature-item">
+        <div class="feat-icon">🔒</div>
+        <h3>개인정보 안전</h3>
+        <p>모든 데이터는 브라우저에만 저장됩니다. 외부 서버로 전송되지 않습니다</p>
+      </div>
+      <div class="feature-item">
+        <div class="feat-icon">📎</div>
+        <h3>파일 첨부 분석</h3>
+        <p>계획서 파일을 업로드하면 AI가 자동으로 결과 보고서를 생성합니다</p>
+      </div>
+      <div class="feature-item">
+        <div class="feat-icon">⚡</div>
+        <h3>Primary/Fallback 이중 모델</h3>
+        <p>고품질 모델 실패 시 자동으로 보조 모델로 전환하여 안정적으로 작동합니다</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 공지/안내 -->
+<section class="announce">
+  <div class="section-inner">
+    <div class="announce-grid">
+      <div class="announce-box">
+        <h3>📢 공지사항</h3>
+        <ul class="announce-list">
+          <li><a href="#">2026학년도 공문서 서식 기준 업데이트 안내</a><span>2026.04.19</span></li>
+          <li><a href="#">가정통신문 동의서 양식 추가</a><span>2026.04.10</span></li>
+          <li><a href="#">협의회 회의록 표 형식 개선</a><span>2026.03.28</span></li>
+          <li><a href="#">홍보자료/보도자료 기능 추가</a><span>2026.03.15</span></li>
+        </ul>
+      </div>
+      <div class="announce-box">
+        <h3>📖 사용 가이드</h3>
+        <ul class="announce-list">
+          <li><a href="#">처음 사용자를 위한 학교 정보 설정 방법</a><span>가이드</span></li>
+          <li><a href="#">에듀파인 복잡도(간단/중간/상세) 선택 기준</a><span>가이드</span></li>
+          <li><a href="#">HWP 붙여넣기 시 서식 유지 방법</a><span>가이드</span></li>
+          <li><a href="#">파일 첨부로 보고서 자동 생성하기</a><span>가이드</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="f-logo">📋 학교문서AI</div>
+        <p>대한민국 교직원을 위한<br>AI 기반 행정 공문서 작성 서비스<br><br>행정업무운영 편람 준수</p>
+      </div>
+      <div class="footer-col">
+        <h4>문서 유형</h4>
+        <ul>
+          <li><a href="create.html?type=GONGMUN">에듀파인</a></li>
+          <li><a href="create.html?type=PLAN">계획서</a></li>
+          <li><a href="create.html?type=REPORT">보고서</a></li>
+          <li><a href="create.html?type=NEWSLETTER">가정통신문</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>더보기</h4>
+        <ul>
+          <li><a href="create.html?type=MESSAGE">학부모 문자</a></li>
+          <li><a href="create.html?type=PUMUI">지출품의서</a></li>
+          <li><a href="create.html?type=MEETING_MINUTES">회의록</a></li>
+          <li><a href="create.html?type=PROMOTION">홍보자료</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>서비스</h4>
+        <ul>
+          <li><a href="settings.html">학교 정보 설정</a></li>
+          <li><a href="history.html">작성 내역</a></li>
+          <li><a href="#">사용 가이드</a></li>
+          <li><a href="#">문의하기</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 학교문서AI. All rights reserved.</span>
+      <span>대한민국 행정업무운영 편람 기준 준수</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="auth.js"></script>
+</body>
+</html>
