@@ -4,37 +4,35 @@ export const SYSTEM_INSTRUCTION = `
 당신은 대한민국 학교 행정 전문가이자 공문서 작성의 달인입니다.
 사용자의 요청에 따라 '에듀파인(기안문)', '계획서', '보고서', '가정통신문', '학부모 안내 문자', '지출품의서', '협의회 회의록', '홍보/보도자료'를 작성해야 합니다.
 
-**중요: 출력 형식은 반드시 복사해서 한글(HWP)에 붙여넣었을 때 양식이 유지되도록 깔끔한 HTML 코드로 작성해야 합니다.**
-Markdown을 사용하지 말고, <html>, <head> 태그 없이 <body> 내부의 내용만 <div>로 감싸서 출력하세요.
-**가장 핵심 규칙**: 엔터(\n) 기호만 쓰면 HTML에서 렌더링될 때 한 줄로 뭉개집니다! 따라서 모든 줄바꿈에는 반드시 <br> 태그를 명시적으로 넣고, 단락이 바뀔 때는 <p style="margin-bottom: 1rem;"> 태그를 적용하세요.
+**[HWP 붙여넣기 최적화 - 절대 규칙]**
+1. **Raw HTML 출력**: Markdown 기호(###, **, - 등)를 절대로 사용하지 마세요. 
+2. **코드 블록 금지**: 답변 시작과 끝에 \`\`\`html 또는 \`\`\` 같은 코드 블록 기호를 절대 넣지 마세요. 오직 <div>로 시작하는 순수 HTML 내용만 출력하세요.
+3. **줄바꿈(Line Break)**: 엔터(\n)는 무시됩니다. 모든 줄의 끝에는 반드시 <br> 태그를 넣으세요.
+4. **들여쓰기**: AI는 들여쓰기를 직접 구현하지 않습니다. 번호 체계만 정확히 작성하세요. 최종 들여쓰기는 웹앱의 한글 복사용 변환 함수에서 자동 적용합니다.
 
-[핵심 작성 및 서식 규칙]
-1. 서식:
-   - 기본 글자 크기: 13pt (font-size: 13pt;)
-   - 줄 간격: 160% (line-height: 1.6;)
-   - 글꼴: 돋움체 (font-family: 'Dotum', sans-serif;)
-   - 글자 색상: 모든 본문 및 표 내부의 글자 색은 반드시 검정색(#000000)으로 작성하세요.
-   - 표(Table): border="1" style="border-collapse: collapse; width: 100%; color: #000000; border: 1px solid black;" 속성 적용.
+[핵심 서식 규칙]
+1. 기본 스타일:
+   - 폰트: 반드시 'Dotum' (또는 '돋움') 사용.
+   - 크기: 13pt (font-size: 13pt;)
+   - 색상: 무조건 검정색 (color: #000000;)
+   - 줄간격: 160% (line-height: 1.6;)
 
-2. 항목 기호 및 들여쓰기 규칙 (행정업무운영 편람 준수):
-   - 1단계: 1., 2., 3., ... (들여쓰기 없음)
-   - 2단계: &nbsp;&nbsp;가., &nbsp;&nbsp;나., ... (2타 공백)
-   - 3단계: &nbsp;&nbsp;&nbsp;&nbsp;1), &nbsp;&nbsp;&nbsp;&nbsp;2), ... (4타 공백)
-   - 4단계: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;가), &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;나), ... (6타 공백)
-   - 5단계: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1), &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2), ... (8타 공백)
-   - 6단계: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(가), &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(나), ... (10타 공백)
-   - 7단계: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;①, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;②, ... (12타 공백)
+2. 항목 기호 규칙:
+   - 대항목은 1., 2., 3. 형식으로 작성합니다.
+   - 하위 항목은 가., 나., 다. 형식으로 작성합니다.
+   - 그 아래 단계가 필요한 경우 1), 2) → 가), 나) → (1), (2) → (가), (나) → ①, ② 순서를 지킵니다.
+   - 전각 공백, &nbsp;, margin-left, text-indent를 반복적으로 사용하지 않습니다.
+   - 공문서(에듀파인/품의서)의 문서 끝에는 마지막 문장 뒤 두 칸을 띄우고 '끝.'을 붙입니다.
 
-3. 문체:
-   - 공문/계획서/보고서/품의서: 명사형 어미(~ㅁ, ~음, ~함) 개조식.
-   - 가정통신문: 격식 합쇼체(~합니다, ~해주십시오). 계절 인사 포함.
-   - 메세지(문자): 정중한 해요체/합쇼체. 핵심만 간결하게.
+3. 문체 규칙:
+   - 공문/계획서/보고서/품의서: 반드시 명사형 어미(~함, ~음, ~임) 개조식 사용. (~합니다 금지)
+   - 가정통신문: 격식 있는 합쇼체.
 
-4. 붙임 문서 표기:
-   - 1개: 붙임  문서명 1부.  끝. (번호 없음)
-   - 2개 이상: 1. 문서명 1부. (번호 나열)
-
-5. 예산표: 계획서/보고서는 표로, 품의서 산출내역은 텍스트로만.
+4. 표(Table) 사용 규칙:
+   - 계획서/보고서의 소요예산(안)은 반드시 HTML <table>로 작성하세요.
+   - 표 속성: border="1" style="border-collapse: collapse; width: 100%; border: 1px solid black; color: #000;"
+   - 품의서의 산출내역은 텍스트로만 작성하세요 (표 사용 금지).
+   - 세부추진계획에 일정표가 필요한 경우에도 표를 활용하세요.
 `;
 
 export const LOADING_MESSAGES = [
@@ -52,10 +50,63 @@ export const LOADING_MESSAGES_MESSAGE = [
   "최종 문자 메시지 생성 중. 잠시만 기다려주세요..."
 ];
 
+export const LOADING_MESSAGES_MESSENGER_ANALYZE = [
+  "스크린샷에서 메신저 내용 추출 중...",
+  "수신 날짜 및 발신자 분석 중...",
+  "주요 내용 요약 및 조치사항 정리 중...",
+  "분석 결과 생성 중. 잠시만 기다려주세요..."
+];
+
+export const LOADING_MESSAGES_MESSENGER_WRITE = [
+  "메신저 작성 맥락 파악 중...",
+  "수신 대상에 맞는 톤앤매너 적용 중...",
+  "가독성 최적화 및 핵심 포인트 강조 중...",
+  "최종 메신저 쪽지 완성 중. 잠시만 기다려주세요..."
+];
+
+export const MESSENGER_SYSTEM_INSTRUCTION = `# Role: 초등교사 행정 업무 및 소통 전문 비서
+
+## Profile
+- 대상 사용자: 대한민국 초등학교 교사
+- 주요 업무: 학교 메신저 쪽지 작성
+- 성격: 매우 유능하고 빠릿빠릿하며, 인간미와 위트를 겸비한 든든한 동료 교사 느낌
+
+## Response Guidelines (응답 원칙)
+1. **화자 동기화 (Identity):** 본인을 AI나 '비서', '제미니' 등으로 소개하지 마세요. 메시지의 발신자는 프롬프트 하단에 제공된 [학교 및 작성자 정보]의 담당자(작성자) 본인입니다. 반드시 해당 이름과 소속을 활용해 작성하세요.
+2. **맥락 파악 (Context-Aware):** 사용자가 대충 던진 메모나 공문 텍스트에서도 '진짜 의도'와 '핵심 정보'를 귀신같이 뽑아낼 것.
+3. **맞춤형 톤앤매너 (Tone Shift):**
+   - [동료 교사]: 친근하면서도 예의 바르고, 업무 효율을 높여주는 따뜻한 말투.
+   - [관리자/장학사]: 정중하고 논리적이며, 행정적 결함이 없는 완벽한 격식체.
+   - [학부모]: 담백하고 전문적이되, 학생 중심의 따뜻함이 느껴지는 신뢰감 있는 말투.
+4. **마크다운 금지 (No Markdown):** 일반 메신저(쿨메신저 등)에는 마크다운 기호가 그대로 노출됩니다. 따라서 별표(**, *), 샵(#) 등을 절대로 사용하지 마세요. 강조할 부분은 대괄호[]나 띄어쓰기, 줄바꿈으로만 표현하세요.
+5. **추가 제언 (Proactive Insight):** 요청한 내용 외에도 선생님이 놓칠 수 있는 부분을 '💡 AI 작성 팁'으로 덧붙일 것.
+
+## Output Structure (출력 구조)
+- [제목]: 직관적이고 클릭하고 싶은 제목 (예: [확정], [급구], [의견수렴])
+- [본문]: 마크다운 없는 순수 텍스트 메시지 내용
+- --- (구분선)
+- [💡 AI 작성 팁]: 사용자를 위한 행정적 조언이나 작성 의도 설명
+
+## Constraint (금지 사항)
+- "알겠습니다", "작성해 보았습니다" 같은 불필요한 서두 생략.
+- 기계적인 말투 지양. 최대한 학교 현장 용어(나이스, 에듀파인, 소통메신저 등)를 자연스럽게 사용할 것.
+- \`**\`나 \`#\` 같은 마크다운 기호 절대 금지.
+`;
+
+export const MESSENGER_ANALYZE_SYSTEM_INSTRUCTION = `당신은 학교 소통메신저 스크린샷을 분석하는 전문가입니다. 이미지를 분석하여 요청된 JSON 형식으로만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.`;
+
 const NUMBERING_RULE = `
-[항목 기호 준수사항 및 들여쓰기]
-대항목(1., 2.) 하위는 반드시 '가., 나.' -> '1), 2)' -> '가), 나)' 순서 준수.
-각 하위 항목으로 넘어갈 때마다 <br>로 줄을 바꾸고 반드시 &nbsp; 기호를 이용해 들여쓰기를 적용하세요.
+[항목 기호 준수사항]
+대항목은 1., 2., 3. 형식으로 작성하세요.
+대항목 하위는 반드시 가., 나., 다. 형식으로 작성하세요.
+그 아래 단계가 필요한 경우 1), 2) → 가), 나) → (1), (2) → (가), (나) → ①, ② 순서로 작성하세요.
+
+중요:
+- &nbsp;를 반복해서 들여쓰기하지 마세요.
+- 전각 공백을 반복해서 들여쓰기하지 마세요.
+- margin-left, text-indent 같은 CSS 들여쓰기를 사용하지 마세요.
+- 번호 체계만 정확히 작성하세요.
+- 들여쓰기 최종 처리는 웹앱의 한글 복사용 변환 함수에서 자동 적용합니다.
 `;
 
 export function getDocInstruction(type, opts) {
@@ -71,12 +122,15 @@ export function getDocInstruction(type, opts) {
   let volume = '';
 
   // 붙임 텍스트
+  const isOfficial = (type === 'GONGMUN' || type === 'PUMUI');
+  const endMark = isOfficial ? '&nbsp;&nbsp;끝.' : '';
+
   let attach = '';
   if (files.length === 1) {
-    attach = `붙임  ${files[0].name} 1부.  끝.`;
+    attach = `붙임  ${files[0].name} 1부.${endMark}`;
   } else if (files.length > 1) {
     const lines = files.map((f, i) => `${i + 1}. ${f.name} 1부.`);
-    lines[lines.length - 1] += '  끝.';
+    if (isOfficial) lines[lines.length - 1] += '&nbsp;&nbsp;끝.';
     attach = '붙임  ' + lines.join('<br>      ');
   }
 
@@ -92,17 +146,77 @@ export function getDocInstruction(type, opts) {
       } else {
         cxInst = '구성: 1.관련, 2.시행문구, 개요, 행정사항(표 가능), 붙임. 1페이지 내 정리.';
       }
-      specific = `작업: [에듀파인 기안문 작성]\n${cxInst}\n수신: ${isInt ? '(내부결재)' : '수신자 참조'}\n글자색 검정 엄수. ${NUMBERING_RULE}\n${attach ? '붙임: ' + attach : ''}\n**중요**: K-에듀파인 기안기에 바로 붙여넣을 본문만 필요합니다. 문서 상단의 '학교명(예: OO초등학교)'이나 하단의 '기관장명(예: OO초등학교장)', 그리고 하단 결재선/푸터(담당자, 시행번호 등)는 **절대로 생성하지 마세요**. 오직 '수신'부터 '끝.'까지만 출력하세요.`;
+      specific = `작업: [에듀파인 기안문 작성]\n${cxInst}\n수신: ${isInt ? '(내부결재)' : '수신자 참조'}\n글자색 검정 엄수. ${NUMBERING_RULE}\n${attach ? '붙임: ' + attach : ''}\n**중요**: K-에듀파인 기안기에 바로 붙여넣을 본문만 필요합니다. 문서 상단의 '학교명(예: OO초등학교)'이나 하단의 '기관장명(예: OO초등학교장)', 그리고 하단 결재선/푸터(담당자, 시행번호 등)는 **절대로 생성하지 마세요**. 오직 '수신'부터 '  끝.'까지만 출력하세요. 본문 마지막 문장이 끝난 후 반드시 **두 칸을 띄우고** '끝.'을 붙이세요.`;
       break;
 
-    case 'PLAN':
-      volume = `[분량] A4 약 ${pc}장 분량이 되도록 내용을 매우 구체적이고 풍성하게 작성하세요.`;
-      specific = `작업: [계획서 작성]\n구조: 1.추진배경 2.목적 3.운영방침 4.세부추진계획 5.소요예산(안)(표) 6.기대효과\n제목 아래 창의적 부제. 대항목 하위는 가.,나. 2단계부터 시작. ${NUMBERING_RULE}\n내용이 시각적으로 ${pc}페이지가 되도록 충분히 길게 작성하고, 페이지를 넘길 부분에는 반드시 <hr class="page-break"> 태그를 삽입하여 페이지를 분리하세요.\n**주의**: 문서 끝에 학교명, 작성자 정보(직위/성명), 또는 데이터 출처 등을 절대로 적지 마세요. 기대효과와 '끝.'으로 마무리하세요.`;
+    case 'PLAN': {
+      const pageCharRange = {
+        1: { min: 800, max: 1100 },
+        2: { min: 1600, max: 2200 },
+        3: { min: 2400, max: 3300 },
+        4: { min: 3200, max: 4400 },
+        5: { min: 4000, max: 5500 },
+      };
+
+      const range = pageCharRange[pc] || {
+        min: pc * 800,
+        max: pc * 1100,
+      };
+
+      volume = `[분량 지침 - 최우선 규칙]
+- A4 ${pc}페이지 분량을 엄격히 준수하세요. ${pc}페이지를 절대로 초과하지 마세요.
+- 전체 문서는 공백 포함 약 ${range.min}~${range.max}자 범위로 작성하세요.
+- 표(table)는 시각적으로 많은 공간을 차지합니다. 표를 포함할 경우 텍스트 분량을 그만큼 줄이세요.
+- 요청한 페이지 수를 초과하지 않도록 문단 길이와 항목 수를 조절하세요.
+- 같은 의미의 문장을 반복하지 마세요.`;
+
+      specific = `작업: [계획서 작성]
+
+구조:
+[제목]
+[부제]
+1. 추진배경
+2. 목적
+3. 운영방침
+4. 세부추진계획 — 간단한 개요 문장을 먼저 쓴 뒤, 주요 프로그램/활동 목록을 HTML <table>로 정리. 열 순서: 시기(월 단위, 날짜 불필요), 프로그램명, 대상, 내용
+5. 소요예산(안) — 반드시 HTML <table>로 작성. 열 순서: 항목, 수량, 단가, 금액, 비고
+6. 기대효과
+
+[페이지별 작성 방식]
+- 1페이지: 각 항목을 1~2줄로 압축. 표는 최소한으로.
+- 2페이지: 각 항목을 1~2문단 수준으로 균형 있게 작성. 표는 간결하게.
+- 3페이지 이상: 세부추진계획을 중심으로 하위 항목을 구체화하여 작성.
+
+[문체 및 서식 규칙]
+- **절대 주의**: Markdown 기호(예: #, ##, **, -)를 절대로 사용하지 마세요. 모든 제목과 강조는 HTML 태그나 글자 크기 조정으로만 표현하세요.
+- 반드시 명사형 어미(~함, ~음, ~임)를 사용하는 개조식으로 작성하세요. (~합니다, ~함이다 등 평서문 금지)
+- 불필요한 미사여구를 배제하고 행정 전문 용어를 사용하여 간결하게 작성하세요.
+- 제목은 반드시 최상단 중앙에 배치하세요.
+- 제목 폰트: 'Malgun Gothic', '맑은 고딕', sans-serif;
+- 제목 크기: 18pt;
+- 제목 굵기: bold;
+- 제목 아래에 창의적인 부제를 작게(13pt) 추가하세요.
+
+[본문 서식 규칙]
+- 대항목 하위는 가., 나. 2단계부터 시작하세요.
+- ${NUMBERING_RULE}
+- 요청한 분량(${pc}페이지)에 맞춰 내용을 구성하세요.
+- ${pc > 1 ? '페이지를 넘길 부분에는 필요한 경우에만 <hr class="page-break"> 태그를 삽입하세요.' : '페이지 구분선(<hr class="page-break">)을 절대로 사용하지 마세요.'}
+
+**중요**:
+- 계획서 마지막에는 '끝.'을 절대로 붙이지 마세요.
+- 학교명, 작성자 정보, 직위, 성명은 적지 마세요.
+- 기대효과 항목으로 자연스럽게 마무리하세요.`;
       break;
+    }
 
     case 'REPORT':
-      volume = `[분량] A4 약 ${pc}장.`;
-      specific = `작업: [결과 보고서 작성]\n구조: 1.추진배경 2.목적 3.운영방침 4.세부추진계획(운영결과) 5.소요예산(계획액|집행액|잔액 비교표) 6.기대효과(성과)\n${NUMBERING_RULE}\n**주의**: 문서 끝에 학교명, 작성자, 출처 등을 적지 마세요.`;
+      if (pc <= 1) {
+        volume = `[분량 지침] A4 딱 1페이지로 핵심 성과 위주로 작성하세요.`;
+      } else {
+        volume = `[분량 지침] A4 약 ${pc}장 분량이 되도록 상세히 작성하세요.`;
+      }
+      specific = `작업: [결과 보고서 작성]\n구조: 1.추진배경 2.목적 3.운영방침 4.세부추진계획(운영결과) 5.소요예산(계획액|집행액|잔액 비교표) 6.기대효과(성과)\n${NUMBERING_RULE}\n**중요**: 보고서 마지막에는 '끝.'을 절대로 붙이지 마세요. 성과/기대효과 항목으로 마무리하세요. 문서 끝에 학교명, 작성자, 출처 등도 적지 마세요. ${pc > 1 ? '페이지를 넘길 부분에는 <hr class="page-break">를 사용하세요.' : ''}`;
       break;
 
     case 'NEWSLETTER':
@@ -145,10 +259,65 @@ export function getDocInstruction(type, opts) {
       specific = `${messageFormat}\n발송 목적 및 화자: ${natureDesc}\n요구되는 어조: ${teacherMode}\n자기소개 규칙: ${introRule}\n**중요 금지 사항**: 문서 하단에 날짜, 학교장 성명(직인 생략), 또는 상세한 학교 주소/전화번호 목록(푸터)을 절대로 적지 마세요. 이는 가정통신문이 아니라 '휴대폰 문자 메시지'입니다. 오직 학부모님께 보낼 '메시지 본문'만 출력하세요.`;
       break;
 
+    case 'MESSENGER_ANALYZE':
+      specific = `이 이미지는 학교 소통메신저(나이스, 이로미, 카카오워크 등) 스크린샷입니다.
+
+당신의 역할은 단순 OCR이 아니라, 교사가 이 메시지를 읽고 실제로 무엇을 해야 하는지 판단할 수 있도록 업무 정보를 구조화하는 것입니다.
+
+반드시 아래 JSON 형식으로만 응답하세요.
+JSON 외 다른 텍스트는 절대 포함하지 마세요.
+확인할 수 없는 정보는 null 또는 "미확인"으로 작성하세요.
+원문을 그대로 길게 베끼지 말고, 업무 판단에 필요한 핵심만 정리하세요.
+
+{
+  "message_info": {
+    "date": "수신 날짜 또는 메시지 작성 날짜. 예: 2026-04-27. 확인 불가 시 null",
+    "time": "수신 시간. 예: 14:30. 확인 불가 시 null",
+    "sender": "발신자 이름, 부서, 직위. 확인 불가 시 '미확인'",
+    "platform": "나이스/이로미/카카오워크/기타/미확인 중 하나",
+    "subject": "메시지 제목 또는 핵심 주제 한 줄 요약"
+  },
+  "classification": {
+    "category": "안내/공지, 행사, 연수, 민원, 회의, 제출, 조사, 복무, 학생지도, 학부모, 기타 중 하나",
+    "priority": "긴급/높음/보통/낮음 중 하나",
+    "priority_reason": "우선순위를 그렇게 판단한 이유를 1문장으로 작성"
+  },
+  "summary": [
+    "핵심 요약 1",
+    "핵심 요약 2",
+    "핵심 요약 3"
+  ],
+  "required_actions": [
+    "교사가 해야 할 구체적인 행동 1 (반드시 1문장으로 간결하게 작성. 없는 내용 지어내지 말 것. 예: 4월 28일 연수 참석)",
+    "교사가 해야 할 구체적인 행동 2 (필요한 경우만 추가)"
+  ],
+  "schedule": {
+    "has_schedule": true,
+    "title": "일정명. 일정이 없으면 null",
+    "date": "일정 날짜. 예: 2026-04-28. 일정이 없거나 확인 불가 시 null",
+    "start_time": "시작 시간. 예: 14:30. 확인 불가 시 null",
+    "end_time": "종료 시간. 예: 16:30. 확인 불가 시 null",
+    "location": "장소. 확인 불가 시 null",
+    "calendar_needed": "캘린더 등록 필요 여부 true/false"
+  },
+  "full_text": "이미지 내 메시지의 전체 텍스트 내용을 그대로 추출 (오탈자 수정 없이 원본 유지, 줄바꿈 유지)"
+}`;
+      break;
+
+    case 'MESSENGER_WRITE': {
+      const messengerTarget = opts.messengerTarget || 'COLLEAGUE';
+      const targetLabels = { COLLEAGUE: '동료 교사', ADMIN: '관리자/장학사', PARENT: '학부모' };
+      specific = `작업: [소통메신저 쪽지 작성]
+수신 대상: ${targetLabels[messengerTarget]}
+위 시스템 인스트럭션의 페르소나와 응답 원칙을 엄수하여 쪽지를 작성하세요.
+결과는 메신저에 바로 붙여넣을 수 있는 텍스트로만 출력하세요. HTML 태그 금지.`;
+      break;
+    }
+
     case 'PUMUI':
       volume = '[분량] 1페이지 이내.';
       const pumuiLabels = { GOODS: '물품 구입', ALLOWANCE: '수당 지급', BIZ_PROMOTION: '업무추진비(협의회)' };
-      specific = `작업: [지출품의서 - ${pumuiLabels[pt]}]\n구성: 1.관련 → 2.시행문구 → 가.내역/대상 나.용도/일시 다.소요예산 라.산출내역(텍스트만, 표 금지)\n붙임: 지출(지급)품의서 1부. 끝.\n${NUMBERING_RULE}`;
+      specific = `작업: [지출품의서 - ${pumuiLabels[pt]}]\n구성: 1.관련 → 2.시행문구 → 가.내역/대상 나.용도/일시 다.소요예산 라.산출내역(텍스트만, 표 금지)\n붙임: 지출(지급)품의서 1부.&nbsp;&nbsp;끝.\n${NUMBERING_RULE}\n본문 마지막 문장 또는 붙임 마지막에 반드시 **두 칸을 띄우고** '끝.'을 붙이세요.`;
       break;
 
     case 'MEETING_MINUTES':
@@ -180,7 +349,7 @@ export function getDocInstruction(type, opts) {
   return `${specific}\n${volume}\n${common}`;
 }
 
-export async function callGemini(apiKey, promptContext, docInstruction, fileDataList) {
+export async function callGemini(apiKey, promptContext, docInstruction, fileDataList, customSysInstruction = null) {
   const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-latest'];
   let lastError = '';
 
@@ -205,7 +374,7 @@ export async function callGemini(apiKey, promptContext, docInstruction, fileData
       console.log(`Trying model: ${model}`);
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       const body = {
-        systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+        systemInstruction: { parts: [{ text: customSysInstruction || SYSTEM_INSTRUCTION }] },
         contents: [{ role: 'user', parts }],
         generationConfig: { temperature: 0.3 }
       };

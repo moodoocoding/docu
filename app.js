@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
 import { getDocInstruction, callGemini, LOADING_MESSAGES, LOADING_MESSAGES_MESSAGE } from './gemini.js';
-import { copyHtmlForHwp, downloadMarkdown, printDocument } from './export.js';
+import { copyHtmlForHwp, addIndentationToHtml, downloadMarkdown, printDocument } from './export.js';
 
 // app.js — 메인 UI 로직: 폼 전환, 이벤트, AI 호출 연결
 
@@ -223,6 +223,9 @@ import { copyHtmlForHwp, downloadMarkdown, printDocument } from './export.js';
           .replace(/^```html?\s*/i, '')
           .replace(/```\s*$/, '')
           .trim();
+
+        // 들여쓰기 후처리: 번호 패턴에 맞는 전각 공백 자동 삽입
+        generatedHtml = addIndentationToHtml(generatedHtml);
 
         // 미리보기 렌더링
         if (docType === 'MESSAGE') {

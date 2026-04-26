@@ -13,6 +13,40 @@ nav a:hover,nav a.active{color:#4f46e5;background:#ede9fe;}
 .header-btn{background:#4f46e5;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .2s;}
 .header-btn:hover{background:#4338ca;}
 
+/* 드롭다운 스타일 */
+.dropdown { position: relative; display: inline-block; }
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 130px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 1000;
+  border-radius: 10px;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 10px;
+  border: 1px solid #e8eaf0;
+  overflow: hidden;
+  padding: 6px 0;
+}
+.dropdown-content a {
+  color: #444 !important;
+  padding: 10px 16px !important;
+  text-decoration: none !important;
+  display: block !important;
+  font-size: 13px !important;
+  border-radius: 0 !important;
+  background: none !important;
+  transition: background 0.2s;
+  text-align: center;
+}
+.dropdown-content a:hover { background-color: #f5f3ff !important; color: #4f46e5 !important; }
+.dropdown:hover .dropdown-content { display: block; }
+.dropbtn { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.dropbtn::after { content: '▾'; font-size: 10px; margin-left: 2px; opacity: 0.7; }
+
 /* 메인 레이아웃: 좌우 분할 */
 .main-container{flex:1;display:flex;overflow:hidden;}
 

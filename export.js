@@ -7,7 +7,34 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// HTML을 클립보드에 text/html 형태로 복사 (HWP 붙여넣기용)
+// AI 생성 HTML에 들여쓰기를 자동 적용하는 후처리 함수
+// <br> 직후의 기존 공백/&nbsp;를 제거하고, 번호 패턴에 따라 전각 공백(U+3000)을 삽입한다.
+export function addIndentationToHtml(html) {
+  if (!html) return html;
+
+  const FW = '\u3000'; // 전각 공백
+  // &nbsp; 또는 일반 공백을 매칭하는 패턴 (번호 앞의 기존 들여쓰기 제거용)
+  const SP = '(?:&nbsp;|\\s|\\u00a0|\\u3000)*';
+
+  // 순서 중요: 더 긴(구체적인) 패턴부터 처리해야 충돌 방지
+  let result = html
+    // (가) (나) (다) → 전각 공백 5개
+    .replace(new RegExp('(<br\\s*\\/?>)' + SP + '(\\([가-하]\\))', 'gi'), '$1' + FW.repeat(5) + '$2')
+    // (1) (2) (3) → 전각 공백 4개
+    .replace(new RegExp('(<br\\s*\\/?>)' + SP + '(\\(\\d+\\))', 'gi'), '$1' + FW.repeat(4) + '$2')
+    // ① ② ③ → 전각 공백 6개
+    .replace(new RegExp('(<br\\s*\\/?>)' + SP + '([①②③④⑤⑥⑦⑧⑨⑩])', 'g'), '$1' + FW.repeat(6) + '$2')
+    // 가) 나) 다) → 전각 공백 3개
+    .replace(new RegExp('(<br\\s*\\/?>)' + SP + '([가-하]\\))', 'gi'), '$1' + FW.repeat(3) + '$2')
+    // 1) 2) 3) → 전각 공백 2개
+    .replace(new RegExp('(<br\\s*\\/?>)' + SP + '(\\d+\\))', 'gi'), '$1' + FW.repeat(2) + '$2')
+    // 가. 나. 다. → 전각 공백 1개
+    .replace(new RegExp('(<br\\s*\\/?>)' + SP + '([가-하]\\.)', 'gi'), '$1' + FW + '$2');
+
+  return result;
+}
+
+// HTML을 클립보드에 text/html 형태로 복사 (HWP 붙여넣기: 표/굵기/서식 유지)
 export async function copyHtmlForHwp(html) {
   try {
     const blob = new Blob([html], { type: 'text/html' });

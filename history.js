@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { copyHtmlForHwp, downloadMarkdown } from './export.js';
+import { copyHtmlForHwp, addIndentationToHtml, downloadMarkdown } from './export.js';
 
 const container = document.getElementById('historyContainer');
 let historyData = [];
@@ -82,7 +82,7 @@ function render() {
 
 function openModal(idx) {
   currentItem = historyData[idx];
-  currentHtml = currentItem.html;
+  currentHtml = addIndentationToHtml(currentItem.html);
   document.getElementById('modalTitle').textContent = (currentItem.type_name || currentItem.typeName) + ' - ' + (currentItem.preview || '');
   document.getElementById('modalBody').innerHTML = currentHtml;
   document.getElementById('modal').classList.add('show');

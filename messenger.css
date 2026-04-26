@@ -1,0 +1,307 @@
+/* messenger.css — 소통메신저 전용 추가 스타일 (create.css를 베이스로 사용) */
+
+/* ===== 탭 스타일 (폼 헤더 내) ===== */
+.m-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+.m-tab-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: #f5f6fa;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  border-bottom: 3px solid transparent;
+}
+.m-tab-btn:hover {
+  background: #eef0f6;
+  color: #4f46e5;
+}
+.m-tab-btn.active {
+  background: #fff;
+  color: #4f46e5;
+  border-bottom-color: #4f46e5;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
+}
+
+/* ===== 분석 탭: 드롭존 ===== */
+.drop-zone.drag-over {
+  border-color: #4f46e5;
+  background: #f0f0ff;
+}
+
+/* ===== 분석 탭: 히스토리 리스트 ===== */
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+.history-list::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 10px;
+}
+.history-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 10px;
+  border-bottom: 1px solid #f0f0f8;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 8px;
+}
+.history-item:hover {
+  background: #f5f6fa;
+}
+.history-item:last-child {
+  border-bottom: none;
+}
+.history-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #eee;
+  background: #fff;
+}
+.history-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  background: #f0f0f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.history-info {
+  flex: 1;
+  min-width: 0;
+}
+.history-subject {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-meta {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 3px;
+}
+.history-cat {
+  display: inline-block;
+  background: #ede9fe;
+  color: #7c3aed;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.history-del-btn {
+  background: none;
+  border: none;
+  color: #ddd;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.history-del-btn:hover {
+  color: #f87171;
+}
+
+.btn-clear {
+  background: none;
+  border: 1px solid #e0e0e8;
+  color: #888;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-clear:hover {
+  border-color: #f87171;
+  color: #ef4444;
+}
+
+/* ===== 분석 결과 카드 ===== */
+.result-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  overflow: hidden;
+  border: 1px solid #e8eaf0;
+  animation: fadeInUp 0.3s ease;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid #f0f0f8;
+  background: linear-gradient(135deg, #f8f7ff, #fff);
+}
+.category-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #ede9fe;
+  color: #7c3aed;
+}
+.result-datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.result-datetime span { font-size: 13px; color: #555; font-weight: 600; }
+.result-time { font-size: 12px !important; color: #aaa !important; font-weight: 400 !important; }
+
+.result-sender-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #fafaff;
+  border-bottom: 1px solid #f0f0f8;
+}
+.sender-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.sender-label { font-size: 11px; color: #aaa; font-weight: 500; }
+.sender-name { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+
+.result-subject {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+  padding: 16px 24px 8px;
+  line-height: 1.4;
+}
+
+.result-section { padding: 12px 24px; }
+.result-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.result-summary, .result-action {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+.result-action {
+  background: #fff8f0;
+  border-left: 3px solid #f59e0b;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  color: #92400e;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ===== 쪽지 작성 대상 버튼 ===== */
+.target-group {
+  display: flex;
+  gap: 8px;
+}
+.target-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border: 1.5px solid #e0e0e8;
+  border-radius: 10px;
+  background: #fafafe;
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.target-btn:hover {
+  border-color: #c4b5fd;
+}
+.target-btn.active {
+  border-color: #4f46e5;
+  background: #ede9fe;
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+/* 쪽지 버블 덮어쓰기 (create.css보다 우선순위 높임) */
+.phone-body .msg-bubble {
+  width: fit-content;
+  align-self: flex-end;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  border-radius: 18px 18px 4px 18px;
+  padding: 16px 20px;
+  max-width: 85%;
+  font-size: 15px;
+  line-height: 1.6;
+  box-shadow: 0 4px 16px rgba(79,70,229,0.25);
+  animation: fadeInUp 0.3s ease;
+  word-break: break-word;
+}
+
+.msg-footer-in-messenger {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+.btn-copy-bubble {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-copy-bubble:hover {
+  background: rgba(255, 255, 255, 0.25);
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소통메신저 - 학교문서AI</title>
+  <meta name="description" content="학교 소통메신저 스크린샷 분석 및 선생님께 보낼 쪽지를 AI가 자동으로 작성합니다.">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="create.css">
+  <link rel="stylesheet" href="messenger.css">
+</head>
+<body>
+
+  <!-- 메인 헤더 -->
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="index.html">
+        <div class="logo-icon">📋</div>
+        학교문서AI
+      </a>
+      <nav>
+        <a href="create.html?type=GONGMUN">에듀파인</a>
+        <a href="create.html?type=PLAN">계획서</a>
+        <a href="create.html?type=NEWSLETTER">가정통신문</a>
+        <a href="create.html?type=MESSAGE">문자 답장</a>
+        <a href="messenger.html" class="active" style="color: #4f46e5; font-weight: 700;">소통메신저</a>
+        <a href="contacts.html">주소록</a>
+        <a href="history.html">작성 내역</a>
+        <div class="dropdown">
+          <a href="#" class="dropbtn">개발중</a>
+          <div class="dropdown-content">
+            <a href="create.html?type=REPORT">보고서</a>
+            <a href="create.html?type=PROMOTION">보도자료</a>
+          </div>
+        </div>
+      </nav>
+      <div class="header-actions">
+        <a class="header-btn" href="settings.html">학교 설정</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <!-- 좌측: 입력 폼 -->
+    <div class="form-panel">
+      <div class="form-header" style="padding-bottom: 0;">
+        <div class="form-type-badge">소통메신저</div>
+        <h2>메신저 도우미</h2>
+        <p>스크린샷 분석 및 자동 답장 작성</p>
+        
+        <div class="m-tabs">
+          <button class="m-tab-btn active" data-tab="analyze">📸 메신저 분석</button>
+          <button class="m-tab-btn" data-tab="write">✏️ 쪽지 작성</button>
+        </div>
+      </div>
+
+      <!-- 분석 폼 -->
+      <div class="form-body" id="form-analyze">
+        <div class="field">
+          <label>스크린샷 업로드</label>
+          <div class="file-drop drop-zone" id="dropZone" style="min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div id="dropZoneInner">
+              <div style="font-size:32px; margin-bottom:8px;">📱</div>
+              <div style="font-size: 14px; font-weight: 600; color: #444;">Ctrl+V로 캡처 화면을 바로 붙여넣으세요</div>
+              <div style="font-size:12px; color:#aaa; margin-top:4px;">또는 이미지 끌어다 놓기 / 클릭하여 파일 선택</div>
+            </div>
+            <img id="screenshotPreview" alt="미리보기" style="display:none; width:100%; border-radius:8px; object-fit: contain; max-height: 250px;">
+            <input type="file" id="screenshotInput" accept="image/*" hidden>
+          </div>
+          <div id="uploadActions" style="display:none; margin-top: 8px;">
+            <button class="action-btn" id="changeImageBtn" style="width: 100%;">🔄 이미지 변경</button>
+          </div>
+        </div>
+        
+        <button class="generate-btn" id="analyzeBtn">
+          <span class="btn-text">🔍 AI 분석 시작</span>
+          <span class="btn-loading" style="display:none;">
+            <span class="spinner"></span>
+            <span id="analyzingMsg">분석 중...</span>
+          </span>
+        </button>
+
+        <hr style="border:0; border-top:1px solid #e8eaf0; margin: 16px 0;">
+        
+        <div class="field" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 4px;">
+            <label style="margin: 0;">📁 분석 내역</label>
+            <button class="btn-clear" id="clearHistoryBtn">전체 삭제</button>
+          </div>
+          <div class="history-list" id="historyList" style="flex: 1; overflow-y: auto;">
+            <!-- 히스토리 아이템 렌더링 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 작성 폼 -->
+      <div class="form-body" id="form-write" style="display:none;">
+        <div class="field">
+          <label>수신 대상</label>
+          <div class="target-group">
+            <button class="target-btn active" data-target="COLLEAGUE">👩‍🏫 동료 교사</button>
+            <button class="target-btn" data-target="ADMIN">🏫 관리자/장학사</button>
+            <button class="target-btn" data-target="PARENT">👨‍👩‍👧 학부모</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>전달할 내용 <span class="req">*필수</span></label>
+          <textarea id="writePrompt" rows="8" placeholder="예: 내일(목) 3교시에 교장선생님 수업 참관이 있습니다. 5학년 담당 선생님들께 미리 알려드려야 해요."></textarea>
+        </div>
+        <button class="generate-btn" id="writeGenerateBtn">
+          <span class="btn-text">✨ 쪽지 생성</span>
+          <span class="btn-loading" style="display:none;">
+            <span class="spinner"></span>
+            <span class="loading-msg" id="writeLoadingMsg">생성 중...</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 우측: 미리보기 -->
+    <div class="preview-panel">
+      <!-- 분석용 프리뷰 헤더 -->
+      <div class="preview-header" id="analyzeHeader">
+        <h3 id="previewTitleAnalyze">🔍 분석 결과</h3>
+        <div class="preview-actions">
+          <button class="action-btn" id="addCalendarTopBtn" style="display:none; color: #2563eb; border-color: #bfdbfe; background: #eff6ff;">🗓️ 일정 등록</button>
+          <button class="action-btn" id="copyResultBtn" disabled>📋 결과 복사</button>
+          <button class="action-btn" id="saveAnalysisBtn" disabled>💾 분석 저장</button>
+        </div>
+      </div>
+
+      <!-- 작성용 프리뷰 헤더 -->
+      <div class="preview-header" id="writeHeader" style="display:none;">
+        <h3 id="previewTitleWrite">💬 소통메신저 미리보기</h3>
+        <div class="preview-actions">
+          <button class="action-btn" id="copyWriteBtn" disabled>📋 쪽지 복사</button>
+          <button class="action-btn" id="saveWriteBtn" disabled>💾 내역 저장</button>
+        </div>
+      </div>
+
+      <div class="preview-body" id="previewBody">
+        
+        <!-- 분석 결과 화면 -->
+        <div id="analyzePreviewContainer">
+          <div class="empty-preview" id="analyzeEmpty">
+            <div style="font-size: 48px; opacity: 0.5; margin-bottom: 16px;">📸</div>
+            <p>스크린샷을 업로드하고 분석을 시작해주세요.</p>
+          </div>
+
+          <div class="result-card" id="resultCard" style="display:none;">
+            <!-- 상단 헤더: 발신자, 일시, 우선순위 -->
+            <div class="result-top" style="flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <span class="category-badge" id="resultCategory">카테고리</span>
+                <span id="resultPriority" style="font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: #fee2e2; color: #b91c1c; display:none;">우선순위</span>
+                <span id="resultPlatform" style="font-size: 11px; color: #666; background: #f3f4f6; padding: 3px 8px; border-radius: 4px; display:none;">플랫폼</span>
+              </div>
+              <div class="result-datetime">
+                <span id="resultDate"></span>
+                <span id="resultTime" class="result-time"></span>
+              </div>
+            </div>
+
+            <!-- 발신자 및 제목 -->
+            <div class="result-sender-row">
+              <span class="sender-avatar">👤</span>
+              <div class="history-info">
+                <div class="sender-label">발신자</div>
+                <div class="sender-name" id="resultSender"></div>
+              </div>
+            </div>
+            <div class="result-subject" id="resultSubject"></div>
+
+            <!-- 요약 -->
+            <div class="result-section">
+              <div class="result-section-title">📝 핵심 요약</div>
+              <div class="result-summary" id="resultSummary" style="background: #fafaff; padding: 16px; border-radius: 8px; border: 1px solid #f0f0f8;"></div>
+            </div>
+
+            <!-- 필수 조치사항 -->
+            <div class="result-section" id="requiredActionsSection" style="display:none;">
+              <div class="result-section-title" style="color: #ea580c;">✅ 필수 조치사항</div>
+              <div id="resultRequiredActions" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+
+            <div style="padding: 0 24px 16px; display: flex; flex-direction: column; gap: 12px;">
+              <!-- 원문 전체 내용 (아코디언) -->
+              <details id="fullTextSection" style="display:none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                <summary style="padding: 12px 16px; font-weight: 700; cursor: pointer; color: #475569; outline: none; list-style: none; display: flex; align-items: center; justify-content: space-between;">
+                  <span>📄 메시지 전체 내용</span>
+                  <span style="font-size: 12px; color: #94a3b8;">더보기 ▼</span>
+                </summary>
+                <div id="resultFullText" style="padding: 16px; border-top: 1px solid #e2e8f0; font-size: 13px; color: #334155; line-height: 1.6; white-space: pre-wrap; word-break: break-all;"></div>
+              </details>
+            </div>
+
+            <!-- 숨겨진 일정 상세 영역 -->
+            <div id="scheduleSection" style="display:none; padding: 0 24px 16px;">
+              <div id="resultSchedule" style="background: #fff; border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px;">
+                <div style="font-weight: 700; margin-bottom: 8px; color: #111827;" id="schTitle"></div>
+                <div style="font-size: 13px; color: #4b5563; line-height: 1.6;">
+                  <div><span style="display:inline-block; width:40px; color:#888;">일시:</span> <span id="schDateTime"></span></div>
+                  <div><span style="display:inline-block; width:40px; color:#888;">장소:</span> <span id="schLocation"></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 작성 결과 화면 (결과 카드 형태) -->
+        <div id="writePreviewContainer" style="display:none;">
+          <div class="empty-preview" id="writeEmpty" style="margin-top: 50px;">
+            <div style="font-size: 48px; opacity: 0.5; margin-bottom: 16px;">✏️</div>
+            <p>내용을 입력하고 생성 버튼을 눌러주세요</p>
+          </div>
+
+          <div class="result-card" id="writeResultCard" style="display:none; max-width:600px; margin:0 auto;">
+            <div class="result-top">
+              <span class="category-badge" id="writeTargetBadge" style="background: #ede9fe; color: #4f46e5;">수신 대상</span>
+              <div class="result-datetime">
+                <span id="writeGeneratedDate"></span>
+              </div>
+            </div>
+            
+            <div class="result-section" style="padding-top: 20px;">
+              <div class="result-section-title">💬 생성된 쪽지 내용</div>
+              <div class="result-summary" id="writeGeneratedText" style="font-size: 15px; color: #1a1a2e; white-space: pre-wrap; background: #fafaff; padding: 18px; border-radius: 12px; border: 1px solid #e8eaf0; line-height: 1.7;"></div>
+              
+              <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+                <button id="btnCopyWriteResult" style="background: #fff; color: #4f46e5; border: 1.5px solid #e8eaf0; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
+                  📋 텍스트 복사
+                </button>
+              </div>
+            </div>
+
+            <div class="result-section" id="writeTipSection" style="display:none;">
+              <div class="result-section-title">💡 AI 작성 팁</div>
+              <div class="result-action" id="writeTipText" style="background: #f0fdf4; border-left: 3px solid #22c55e; color: #166534;"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="messenger.js"></script>
+  <script type="module" src="auth.js"></script>
+</body>
+</html>
