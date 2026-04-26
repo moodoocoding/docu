@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사용 가이드 - 학교문서AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-light: #f5f3ff;
+    --text-dark: #1a1a2e;
+    --text-gray: #4b5563;
+    --border: #e8eaf0;
+    --bg: #f8fafc;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--text-dark); line-height: 1.6; }
+
+  header { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .header-inner { max-width: 1000px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 18px; font-weight: 800; color: var(--text-dark); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .logo-icon { font-size: 20px; }
+  .back-link { font-size: 14px; color: var(--text-gray); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+  .back-link:hover { color: var(--primary); }
+
+  .container { max-width: 1000px; margin: 40px auto; padding: 0 24px; display: grid; grid-template-columns: 240px 1fr; gap: 48px; }
+
+  /* 사이드바 */
+  .sidebar { position: sticky; top: 104px; height: fit-content; }
+  .sidebar h4 { font-size: 13px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+  .guide-nav { list-style: none; }
+  .guide-nav li { margin-bottom: 4px; }
+  .guide-nav a { 
+    display: block; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; 
+    color: var(--text-gray); text-decoration: none; transition: all 0.2s;
+  }
+  .guide-nav a:hover { background: #fff; color: var(--primary); }
+  .guide-nav a.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+
+  /* 콘텐츠 */
+  .content { background: #fff; padding: 48px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); min-height: 600px; }
+  .guide-content-area { max-width: 640px; }
+  .guide-header { margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+  .guide-tag { display: inline-block; background: var(--primary-light); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+  .guide-header h1 { font-size: 28px; font-weight: 800; color: var(--text-dark); margin-bottom: 12px; }
+  .guide-header p { font-size: 16px; color: var(--text-gray); }
+
+  .guide-body h2 { font-size: 20px; font-weight: 700; margin: 32px 0 16px; display: flex; align-items: center; gap: 8px; }
+  .guide-body p { margin-bottom: 16px; font-size: 15px; color: #374151; }
+  .guide-body ul, .guide-body ol { margin: 0 0 24px 20px; color: #374151; font-size: 15px; }
+  .guide-body li { margin-bottom: 8px; }
+  
+  .tip-box { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 20px; border-radius: 0 12px 12px 0; margin: 32px 0; font-size: 14px; }
+  .tip-box strong { display: block; color: #0369a1; margin-bottom: 4px; font-size: 15px; }
+
+  .guide-img { width: 100%; border-radius: 12px; border: 1px solid var(--border); margin: 24px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+  @media (max-width: 768px) {
+    .container { grid-template-columns: 1fr; margin: 20px auto; }
+    .sidebar { position: relative; top: 0; margin-bottom: 24px; }
+    .content { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <span class="logo-icon">📋</span>
+      학교문서AI 가이드
+    </a>
+    <a href="index.html" class="back-link">메인으로 돌아가기</a>
+  </div>
+</header>
+
+<div class="container">
+  <aside class="sidebar">
+    <h4>가이드 목록</h4>
+    <ul class="guide-nav">
+      <li><a href="?id=setup" id="nav-setup">⚙️ 학교 정보 설정</a></li>
+      <li><a href="?id=edufine" id="nav-edufine">⚖️ 에듀파인 복잡도</a></li>
+      <li><a href="?id=hwp" id="nav-hwp">📝 HWP 서식 유지</a></li>
+      <li><a href="?id=report" id="nav-report">📊 보고서 자동 생성</a></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <div class="guide-content-area" id="guideContent">
+      <!-- 콘텐츠 동적 삽입 -->
+      <div style="text-align: center; padding: 100px 0; color: #94a3b8;">
+        <p>가이드를 로딩 중입니다...</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="guide.js"></script>
+</body>
+</html>
