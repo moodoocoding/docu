@@ -134,10 +134,6 @@ analyzeBtn.addEventListener('click', async () => {
     showToast('⚠️ 이미지를 먼저 업로드해주세요.');
     return;
   }
-  if (!API_KEY) {
-    showToast('⚠️ Gemini API 키가 설정되지 않았습니다.');
-    return;
-  }
 
   const btnTextEl = analyzeBtn.querySelector('.btn-text');
   const btnLoadingEl = analyzeBtn.querySelector('.btn-loading');
@@ -582,10 +578,6 @@ writeGenerateBtn.addEventListener('click', async () => {
   const prompt = writePrompt.value.trim();
   if (!prompt) {
     showToast('⚠️ 전달할 내용을 입력해주세요.');
-    return;
-  }
-  if (!API_KEY) {
-    showToast('⚠️ Gemini API 키가 설정되지 않았습니다.');
     return;
   }
 

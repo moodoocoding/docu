@@ -333,10 +333,18 @@ JSON 외 다른 텍스트는 절대 포함하지 마세요.
     case 'CALENDAR_ANALYZE':
       specific = `당신은 초등학교 학사일정 및 시간표 분석 전문가입니다.
 이미지 또는 PDF 파일을 분석하여 연간 시간표 데이터를 추출하세요.
+첨부 파일은 보통 "5학년 1반 연간시간표"처럼 학년/반별 연간 수업 편성표입니다.
+표 안에는 날짜별 수업 칸, 교시, 요일, 과목명, 행사/휴업일, 과목별 연간 기준 시수가 함께 들어 있을 수 있습니다.
 
 [출력 형식]
 반드시 아래 JSON 형식으로만 응답하세요. 다른 설명은 절대 금지합니다.
 {
+  "meta": {
+    "school_year": "2026",
+    "grade": "5",
+    "class_name": "1반",
+    "source_type": "annual_timetable"
+  },
   "schedule": {
     "YYYY-MM-DD-교시": "과목명",
     ...
@@ -344,14 +352,20 @@ JSON 외 다른 텍스트는 절대 포함하지 마세요.
   "allocation": {
     "과목명": 시수,
     ...
-  }
+  },
+  "warnings": []
 }
 
 [분석 규칙]
-1. 날짜와 교시(1~10)를 매칭하여 과목명을 추출하세요.
-2. '창체'의 하위 항목(자율, 동아리, 진로)이 있다면 각각 추출하세요.
-3. 공휴일이나 행사는 과목명 대신 해당 명칭을 넣으세요.
-4. 연도는 기본적으로 2026년으로 가정하며, 이미지에 다른 연도가 명시되어 있다면 그에 따르세요.`;
+1. 날짜와 교시(1~10)를 매칭하여 과목명을 추출하세요. 키는 예: "2026-03-02-1" 입니다.
+2. 월/일만 보이면 학년도 기준 연도를 적용하세요. 3~12월은 2026년, 1~2월은 2027년으로 해석하세요. 파일에 다른 학년도가 명시되어 있으면 그 연도를 우선하세요.
+3. 요일 헤더(월, 화, 수, 목, 금, 토)와 주차/기간 표시를 이용해 실제 날짜를 계산하세요.
+4. 과목명은 가능한 한 다음 표준명으로 정규화하세요: 국어, 사회, 도덕, 수학, 과학, 실과, 체육, 음악, 미술, 영어, 자율, 동아리, 진로, 학교자율시간.
+5. '창체', '창의적 체험활동'만 있고 하위 항목이 없으면 "자율"로 넣으세요. 하위 항목이 보이면 자율/동아리/진로 중 실제 표시된 항목으로 넣으세요.
+6. '학교 자율 시간', '학교자율', '학교자율시간'은 모두 "학교자율시간"으로 넣으세요.
+7. 공휴일, 재량휴업일, 행사, 방학처럼 수업 과목이 아닌 칸도 시간표 칸에 명시되어 있으면 그 명칭을 schedule 값으로 넣으세요. 단, 빈 칸이나 해석 불가 칸은 넣지 마세요.
+8. 과목별 연간 기준 시수 또는 편제표가 보이면 allocation에 숫자로 넣으세요. 합계/소계/창체(계)는 넣지 말고 하위 과목만 넣으세요.
+9. 표 일부가 흐리거나 확신이 낮으면 추측하지 말고 해당 칸은 제외한 뒤 warnings 배열에 간단히 적으세요.`;
       break;
   }
 
@@ -374,7 +388,28 @@ JSON 외 다른 텍스트는 절대 포함하지 마세요.
 }
 
 async function callGemini(apiKey, promptContext, docInstruction, fileDataList, customSysInstruction = null) {
-  const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-latest'];
+  const useFunction = location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
+  if (useFunction) {
+    const response = await fetch('/.netlify/functions/gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        promptContext,
+        docInstruction,
+        fileDataList,
+        customSysInstruction,
+        systemInstruction: SYSTEM_INSTRUCTION
+      })
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || `Netlify Function Error ${response.status}`);
+    }
+    return data.text || '';
+  }
+
+  const models = ['gemini-3.1-flash-lite-preview', 'gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-latest'];
   let lastError = '';
 
   const parts = [];
@@ -449,3 +484,14 @@ window.MESSENGER_ANALYZE_SYSTEM_INSTRUCTION = MESSENGER_ANALYZE_SYSTEM_INSTRUCTI
 window.getDocInstruction = getDocInstruction;
 window.callGemini = callGemini;
 
+export {
+  SYSTEM_INSTRUCTION,
+  LOADING_MESSAGES,
+  LOADING_MESSAGES_MESSAGE,
+  LOADING_MESSAGES_MESSENGER_ANALYZE,
+  LOADING_MESSAGES_MESSENGER_WRITE,
+  MESSENGER_SYSTEM_INSTRUCTION,
+  MESSENGER_ANALYZE_SYSTEM_INSTRUCTION,
+  getDocInstruction,
+  callGemini
+};

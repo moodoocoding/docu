@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const XLSX = window.XLSX;
     const dataGrid = document.getElementById('data-grid');
     const addRowBtn = document.getElementById('add-row-btn');
     const downloadBtn = document.getElementById('download-btn');

@@ -175,10 +175,6 @@ import { copyHtmlForHwp, addIndentationToHtml, downloadMarkdown, printDocument }
 
     generateBtn.addEventListener('click', async () => {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-      if (!apiKey) {
-        showToast('⚠️ 서버 설정에 Gemini API 키가 누락되었습니다. (.env 확인 필요)');
-        return;
-      }
 
       const prompt = document.getElementById('promptText').value.trim();
       if (!prompt) {

@@ -20,6 +20,7 @@ export default defineConfig({
         guide_hwp: resolve(__dirname, 'guide_hwp.html'),
         guide_report: resolve(__dirname, 'guide_report.html'),
         messenger: resolve(__dirname, 'messenger.html'),
+        leading: resolve(__dirname, 'leading.html'),
       },
     },
   },

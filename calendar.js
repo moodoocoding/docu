@@ -136,11 +136,12 @@ function renderTabs() {
     `).join('');
 }
 
-window.changePeriod = (idx) => {
+function changePeriod(idx) {
     activePeriodIndex = idx;
     renderTabs();
     renderTimetable();
-};
+}
+window.changePeriod = changePeriod;
 
 // --- 시간표 렌더링 ---
 function renderTimetable() {
@@ -247,12 +248,13 @@ function initModal() {
     };
 }
 
-window.openSubjectModal = (key) => {
+function openSubjectModal(key) {
     targetCellKey = key;
     document.getElementById('subjectModal').classList.add('show');
-};
+}
+window.openSubjectModal = openSubjectModal;
 
-window.selectSubject = (subject) => {
+function selectSubject(subject) {
     if (targetCellKey) {
         if (subject) {
             currentSchedule[targetCellKey] = subject;
@@ -265,7 +267,8 @@ window.selectSubject = (subject) => {
     }
     document.getElementById('subjectModal').classList.remove('show');
     showToast(subject ? `${subject} 편성됨` : '삭제됨');
-};
+}
+window.selectSubject = selectSubject;
 
 function showToast(msg) {
     const toast = document.getElementById('toast');
@@ -306,11 +309,12 @@ function initTemplateModal() {
 
 let activeTemplateCell = null;
 
-window.openTemplateSubjectSelect = (cell) => {
+function openTemplateSubjectSelect(cell) {
     activeTemplateCell = cell;
     targetCellKey = 'TEMPLATE'; // 플래그
     document.getElementById('subjectModal').classList.add('show');
-};
+}
+window.openTemplateSubjectSelect = openTemplateSubjectSelect;
 
 function applyTemplateToSchedule() {
     if (!confirm('설정된 시간표를 1년 전체 일정에 일괄 적용하시겠습니까?\n(기존에 입력된 데이터가 모두 덮어씌워집니다)')) return;
@@ -426,12 +430,81 @@ function initAllocationModal() {
 }
 
 // --- 파일 업로드 분석 로직 ---
-async function analyzeFile(file) {
-    const apiKey = localStorage.getItem('gemini_api_key');
-    if (!apiKey) {
-        alert('Gemini API 키가 설정되지 않았습니다. 학교 설정에서 API 키를 입력해주세요.');
-        return;
+const SUBJECT_ALIASES = {
+    "창체": "자율",
+    "창의적체험활동": "자율",
+    "창의적 체험활동": "자율",
+    "창체자율": "자율",
+    "창체 자율": "자율",
+    "자율활동": "자율",
+    "동아리활동": "동아리",
+    "진로활동": "진로",
+    "학교 자율 시간": "학교자율시간",
+    "학교자율": "학교자율시간",
+    "학교자율 시간": "학교자율시간"
+};
+
+function normalizeSubjectName(value) {
+    if (value === null || value === undefined) return '';
+    const subject = String(value).trim();
+    if (!subject) return '';
+    return SUBJECT_ALIASES[subject] || subject;
+}
+
+function extractJsonObject(responseText) {
+    if (responseText.includes('```')) {
+        const fenced = responseText.match(/```(?:json)?([\s\S]*?)```/);
+        if (fenced) return fenced[1].trim();
     }
+
+    const start = responseText.indexOf('{');
+    const end = responseText.lastIndexOf('}');
+    if (start !== -1 && end !== -1 && end > start) {
+        return responseText.slice(start, end + 1);
+    }
+
+    return responseText.trim();
+}
+
+function normalizeSchedule(rawSchedule) {
+    const cleanedSchedule = {};
+    const entries = Array.isArray(rawSchedule)
+        ? rawSchedule.map(item => [`${item.date}-${item.period}`, item.subject])
+        : Object.entries(rawSchedule || {});
+
+    entries.forEach(([key, value]) => {
+        const match = String(key).match(/^(\d{4}-\d{2}-\d{2})-(\d{1,2})$/);
+        if (!match) return;
+
+        const period = Number(match[2]);
+        const subject = normalizeSubjectName(value);
+        if (period < 1 || period > 10 || !subject) return;
+
+        cleanedSchedule[`${match[1]}-${period}`] = subject;
+    });
+
+    return cleanedSchedule;
+}
+
+function normalizeAllocation(rawAllocation) {
+    const cleanedAllocation = {};
+
+    Object.entries(rawAllocation || {}).forEach(([subject, value]) => {
+        const normalizedSubject = normalizeSubjectName(subject);
+        const hours = Number.parseInt(value, 10);
+
+        if (SUBJECTS.includes(normalizedSubject) && Number.isFinite(hours)) {
+            cleanedAllocation[normalizedSubject] = hours;
+        }
+    });
+
+    return cleanedAllocation;
+}
+
+async function analyzeFile(file) {
+    if (!file) return;
+
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key') || '';
 
     showToast('파일 분석 중... 잠시만 기다려주세요.');
     
@@ -443,33 +516,21 @@ async function analyzeFile(file) {
             reader.readAsDataURL(file);
         });
 
-        const docInst = getDocInstruction('CALENDAR_ANALYZE', { settings: {} });
-        const responseText = await callGemini(apiKey, "이 연간 시간표 이미지/PDF를 분석해서 데이터를 추출해줘. 반드시 YYYY-MM-DD-교시 형식의 키를 가진 JSON으로 응답해줘.", docInst, [{ base64, mimeType: file.type }]);
+        const docInst = window.getDocInstruction('CALENDAR_ANALYZE', { settings: {} });
+        const responseText = await window.callGemini(apiKey, "첨부한 연간 시간표 PDF를 분석하세요. 상단/하단의 시수 편제표는 allocation에, 월별/주별 날짜 칸의 실제 시간표는 schedule에 채우세요. schedule 키는 반드시 YYYY-MM-DD-교시 형식으로 만들고, 교시는 1~10 범위만 사용하세요.", docInst, [{ base64, mimeType: file.type }]);
         console.log("AI Response Raw:", responseText);
         
-        // JSON 추출 (마크다운 제거 및 유연한 파싱)
-        let jsonStr = responseText;
-        if (responseText.includes('```')) {
-            jsonStr = responseText.match(/```(?:json)?([\s\S]*?)```/)[1].trim();
-        }
-        
+        const jsonStr = extractJsonObject(responseText);
         const data = JSON.parse(jsonStr);
         console.log("Parsed Data:", data);
 
         if (data.schedule) {
-            // 날짜 형식 보정 (혹시나 AI가 다르게 줬을 경우 대비)
-            const cleanedSchedule = {};
-            for (const [key, val] of Object.entries(data.schedule)) {
-                // key가 YYYY-MM-DD-N 형식인지 확인
-                if (/^\d{4}-\d{2}-\d{2}-\d+$/.test(key)) {
-                    cleanedSchedule[key] = val;
-                }
-            }
+            const cleanedSchedule = normalizeSchedule(data.schedule);
             currentSchedule = { ...currentSchedule, ...cleanedSchedule };
             localStorage.setItem('academic_schedule', JSON.stringify(currentSchedule));
         }
         if (data.allocation) {
-            TARGET_HOURS = { ...TARGET_HOURS, ...data.allocation };
+            TARGET_HOURS = { ...TARGET_HOURS, ...normalizeAllocation(data.allocation) };
             localStorage.setItem('academic_target_hours', JSON.stringify(TARGET_HOURS));
         }
 
@@ -483,15 +544,9 @@ async function analyzeFile(file) {
 }
 
 // 글로벌 등록 (onclick 등에서 사용하기 위함)
-window.changePeriod = changePeriod;
-window.openSubjectModal = openSubjectModal;
-window.closeModal = closeModal;
-window.selectSubject = selectSubject;
-window.saveTemplate = saveTemplate;
 window.applyTemplateToSchedule = applyTemplateToSchedule;
 window.analyzeFile = analyzeFile;
 
 // 초기화 실행
 initTemplateModal();
 initAllocationModal();
-

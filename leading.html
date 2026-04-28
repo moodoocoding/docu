@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>선도학교 - 학교문서AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="create.css">
+  <link rel="stylesheet" href="leading.css">
+  <script type="module" src="auth.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="index.html">
+        <div class="logo-icon">📋</div>
+        학교문서AI
+      </a>
+      <nav>
+        <a href="create.html?type=GONGMUN">에듀파인</a>
+        <a href="create.html?type=PLAN">계획서</a>
+        <a href="create.html?type=NEWSLETTER">가정통신문</a>
+        <a href="create.html?type=MESSAGE">문자 답장</a>
+        <a href="messenger.html">소통메신저</a>
+        <a href="contacts.html">주소록</a>
+        <a href="history.html">작성 내역</a>
+        <a href="leading.html" class="active">선도학교</a>
+        <div class="dropdown">
+          <a href="#" class="dropbtn">개발중</a>
+          <div class="dropdown-content">
+            <a href="calendar.html">학사일정</a>
+            <a href="create.html?type=REPORT">보고서</a>
+            <a href="create.html?type=PROMOTION">보도자료</a>
+          </div>
+        </div>
+      </nav>
+      <div class="header-actions">
+        <a class="header-btn" href="settings.html">학교 설정</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="leading-shell">
+    <section class="leading-hero">
+      <div>
+        <span class="eyebrow">선도학교 도구</span>
+        <h1>사진을 2D 캐릭터로 변환</h1>
+        <p>인물 사진을 업로드하면 굵은 외곽선과 단순한 색면의 어린이용 2D 치비 캐릭터 스타일로 변환합니다.</p>
+      </div>
+      <div class="hero-note">
+        <strong>결과 스타일</strong>
+        <span>가슴 위 인물, 3~3.5등신 비율, 흰색 또는 투명 배경</span>
+      </div>
+    </section>
+
+    <section class="tool-layout">
+      <div class="tool-panel">
+        <div class="panel-title">
+          <h2>캐릭터 변환</h2>
+          <span>대표 인물 1명 기준</span>
+        </div>
+
+        <label class="upload-zone" id="uploadZone">
+          <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp">
+          <span class="upload-icon">＋</span>
+          <strong>사진 업로드 또는 붙여넣기</strong>
+          <em>JPG, PNG, WEBP · Ctrl+V로 이미지 붙여넣기</em>
+        </label>
+
+        <button class="generate-character-btn" id="generateBtn" disabled>
+          <span class="btn-text">캐릭터 생성</span>
+          <span class="btn-loading"><span class="spinner"></span>생성 중...</span>
+        </button>
+      </div>
+
+      <div class="preview-panel-leading">
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <h3>원본</h3>
+            <span id="fileName">사진 대기 중</span>
+          </div>
+          <div class="image-stage original-stage" id="originalStage">
+            <p>사진을 올리면 원본 미리보기가 표시됩니다.</p>
+          </div>
+        </div>
+
+        <div class="preview-card result-card">
+          <div class="preview-card-header">
+            <h3>생성 결과</h3>
+            <a id="downloadBtn" class="download-btn disabled" href="#" download="leading-character.png">다운로드</a>
+          </div>
+          <div class="image-stage result-stage" id="resultStage">
+            <p>캐릭터 생성 결과가 여기에 표시됩니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sample-section">
+      <div class="sample-header">
+        <h2>참고 스타일</h2>
+        <p>아래 톤을 기준으로 굵은 외곽선, 단순한 표정, 평면 색감을 유지합니다.</p>
+      </div>
+      <div class="sample-grid">
+        <img src="leading-samples/sample-1.jpg" alt="2D 캐릭터 참고 이미지 1">
+        <img src="leading-samples/sample-2.jpg" alt="2D 캐릭터 참고 이미지 2">
+        <img src="leading-samples/sample-3.jpg" alt="2D 캐릭터 참고 이미지 3">
+        <img src="leading-samples/sample-4.jpg" alt="2D 캐릭터 참고 이미지 4">
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="leading.js"></script>
+</body>
+</html>
