@@ -390,23 +390,35 @@ JSON 외 다른 텍스트는 절대 포함하지 마세요.
 async function callGemini(apiKey, promptContext, docInstruction, fileDataList, customSysInstruction = null) {
   const useFunction = location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
   if (useFunction) {
-    const response = await fetch('/.netlify/functions/gemini', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        promptContext,
-        docInstruction,
-        fileDataList,
-        customSysInstruction,
-        systemInstruction: SYSTEM_INSTRUCTION
-      })
-    });
+    const functionBases = location.hostname.includes('vercel.app')
+      ? ['/api', '/.netlify/functions']
+      : ['/.netlify/functions', '/api'];
 
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(data.error || `Netlify Function Error ${response.status}`);
+    let lastFunctionError = '';
+    for (const base of functionBases) {
+      const response = await fetch(`${base}/gemini`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          promptContext,
+          docInstruction,
+          fileDataList,
+          customSysInstruction,
+          systemInstruction: SYSTEM_INSTRUCTION
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        return data.text || '';
+      }
+
+      lastFunctionError = data.error || `Function Error ${response.status}`;
+      if (response.status === 404) continue;
+      throw new Error(lastFunctionError);
     }
-    return data.text || '';
+
+    throw new Error(lastFunctionError || 'Function endpoint not found.');
   }
 
   const models = ['gemini-3.1-flash-lite-preview', 'gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-latest'];

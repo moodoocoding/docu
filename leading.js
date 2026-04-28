@@ -59,33 +59,44 @@ function extractBase64(dataUrl) {
 
 async function requestCharacterImage(model, prompt, file) {
   if (USE_NETLIFY_FUNCTION) {
-    const response = await fetch('/.netlify/functions/generate-character', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        prompt,
-        imageBase64: selectedDataUrl,
-        mimeType: file.type
-      })
-    });
+    const functionBases = location.hostname.includes('vercel.app')
+      ? ['/api', '/.netlify/functions']
+      : ['/.netlify/functions', '/api'];
+    let lastFunctionError = '';
 
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(data.error || `Netlify Function Error ${response.status}`);
-    }
+    for (const base of functionBases) {
+      const response = await fetch(`${base}/generate-character`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          imageBase64: selectedDataUrl,
+          mimeType: file.type
+        })
+      });
 
-    return {
-      candidates: [{
-        content: {
-          parts: [{
-            inlineData: {
-              mimeType: data.mimeType,
-              data: data.imageBase64
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        return {
+          candidates: [{
+            content: {
+              parts: [{
+                inlineData: {
+                  mimeType: data.mimeType,
+                  data: data.imageBase64
+                }
+              }]
             }
           }]
-        }
-      }]
-    };
+        };
+      }
+
+      lastFunctionError = data.error || `Function Error ${response.status}`;
+      if (response.status === 404) continue;
+      throw new Error(lastFunctionError);
+    }
+
+    throw new Error(lastFunctionError || 'Function endpoint not found.');
   }
 
   const body = {
