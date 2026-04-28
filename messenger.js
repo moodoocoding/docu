@@ -1,3 +1,5 @@
+import { supabase } from './supabase.js';
+
 // messenger.js — 소통메신저 탭 전체 로직
 // gemini.js의 함수들은 글로벌 스코프에서 직접 접근합니다.
 
@@ -469,27 +471,101 @@ document.getElementById('copyResultBtn')?.addEventListener('click', () => {
 
 // ===== 분석 저장 =====
 const HISTORY_KEY = 'messengerAnalysisHistory';
+const ANALYSIS_TABLE = 'messenger_analysis_history';
+const ANALYSIS_BUCKET = 'messenger-analysis-images';
+let analysisHistoryCache = [];
 
-document.getElementById('saveAnalysisBtn')?.addEventListener('click', () => {
+document.getElementById('saveAnalysisBtn')?.addEventListener('click', async () => {
   if (!currentAnalysisData) return;
-  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  const entry = {
-    id: Date.now(),
-    savedAt: new Date().toISOString(),
-    imageDataUrl: currentImageDataUrl,
-    ...currentAnalysisData,
-  };
-  history.unshift(entry);
-  if (history.length > 30) history.length = 30;
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-  renderHistory();
-  showToast('💾 분석 내역이 저장되었습니다!');
+  const saveBtn = document.getElementById('saveAnalysisBtn');
+  const prevText = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = '저장 중...';
+
+  try {
+    const userId = await getCurrentUserId();
+    if (!userId) throw new Error('로그인이 필요합니다.');
+
+    const historyId = crypto.randomUUID();
+    let imagePath = null;
+
+    if (currentImageDataUrl) {
+      imagePath = await uploadAnalysisImage(userId, historyId, currentImageDataUrl);
+    }
+
+    const payload = {
+      id: historyId,
+      user_id: userId,
+      saved_at: new Date().toISOString(),
+      image_path: imagePath,
+      analysis_json: currentAnalysisData
+    };
+
+    const { error } = await supabase.from(ANALYSIS_TABLE).insert([payload]);
+    if (error) throw error;
+
+    await renderHistory();
+    showToast('💾 분석 내역이 저장되었습니다!');
+  } catch (err) {
+    console.error(err);
+    fallbackSaveToLocal();
+    renderHistoryFromLocal();
+    showToast('⚠️ DB 저장 실패로 로컬에만 저장되었습니다.');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = prevText;
+  }
 });
 
 // ===== 히스토리 렌더링 =====
-function renderHistory() {
-  let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  
+async function renderHistory() {
+  const list = document.getElementById('historyList');
+  list.innerHTML = '<div class="history-empty" style="text-align:center; color:#aaa; font-size:13px; padding:20px;">불러오는 중...</div>';
+
+  try {
+    const userId = await getCurrentUserId();
+    if (!userId) throw new Error('로그인이 필요합니다.');
+
+    const { data, error } = await supabase
+      .from(ANALYSIS_TABLE)
+      .select('id, saved_at, analysis_json, image_path')
+      .eq('user_id', userId)
+      .order('saved_at', { ascending: false })
+      .limit(30);
+
+    if (error) throw error;
+
+    analysisHistoryCache = await Promise.all((data || []).map(async row => {
+      let imageDataUrl = null;
+      if (row.image_path) {
+        const { data: signedData } = await supabase.storage
+          .from(ANALYSIS_BUCKET)
+          .createSignedUrl(row.image_path, 60 * 60);
+        imageDataUrl = signedData?.signedUrl || null;
+      }
+
+      return {
+        id: row.id,
+        savedAt: row.saved_at,
+        imagePath: row.image_path,
+        imageDataUrl,
+        ...(row.analysis_json || {})
+      };
+    }));
+  } catch (err) {
+    console.error('분석 내역 DB 로드 실패:', err);
+    analysisHistoryCache = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  }
+
+  renderHistoryList(analysisHistoryCache);
+}
+
+function renderHistoryFromLocal() {
+  analysisHistoryCache = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  renderHistoryList(analysisHistoryCache);
+}
+
+function renderHistoryList(history) {
   const list = document.getElementById('historyList');
 
   if (!history.length) {
@@ -536,25 +612,101 @@ function renderHistory() {
   });
 
   list.querySelectorAll('.history-del-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       e.stopPropagation();
-      const id = parseInt(btn.dataset.id);
-      const updated = history.filter(h => h.id !== id);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
-      renderHistory();
+      const id = btn.dataset.id;
+      try {
+        await deleteHistoryItem(id);
+        await renderHistory();
+      } catch (err) {
+        console.error(err);
+        const updated = history.filter(h => String(h.id) !== String(id));
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+        renderHistoryFromLocal();
+      }
       showToast('🗑️ 삭제되었습니다.');
     });
   });
 }
 
-document.getElementById('clearHistoryBtn')?.addEventListener('click', () => {
+document.getElementById('clearHistoryBtn')?.addEventListener('click', async () => {
   if (!confirm('분석 내역을 모두 삭제할까요?')) return;
-  localStorage.removeItem(HISTORY_KEY);
-  renderHistory();
+  try {
+    const userId = await getCurrentUserId();
+    if (!userId) throw new Error('로그인이 필요합니다.');
+
+    const { data, error } = await supabase
+      .from(ANALYSIS_TABLE)
+      .select('id, image_path')
+      .eq('user_id', userId);
+    if (error) throw error;
+
+    const paths = (data || []).map(item => item.image_path).filter(Boolean);
+    if (paths.length) {
+      await supabase.storage.from(ANALYSIS_BUCKET).remove(paths);
+    }
+    await supabase.from(ANALYSIS_TABLE).delete().eq('user_id', userId);
+    await renderHistory();
+  } catch (err) {
+    console.error(err);
+    localStorage.removeItem(HISTORY_KEY);
+    renderHistoryFromLocal();
+  }
   showToast('🗑️ 전체 내역이 삭제되었습니다.');
 });
 
 renderHistory();
+
+async function getCurrentUserId() {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id || null;
+}
+
+async function uploadAnalysisImage(userId, historyId, dataUrl) {
+  const [meta, base64] = String(dataUrl).split(',');
+  const mimeMatch = /data:(.*?);base64/.exec(meta || '');
+  const mimeType = mimeMatch?.[1] || 'image/png';
+  const ext = mimeType.includes('jpeg') ? 'jpg' : (mimeType.includes('webp') ? 'webp' : 'png');
+  const fileName = `${userId}/${historyId}.${ext}`;
+  const binary = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+
+  const { error } = await supabase.storage
+    .from(ANALYSIS_BUCKET)
+    .upload(fileName, binary, {
+      contentType: mimeType,
+      upsert: true
+    });
+
+  if (error) throw error;
+  return fileName;
+}
+
+async function deleteHistoryItem(id) {
+  const { data: item, error: fetchError } = await supabase
+    .from(ANALYSIS_TABLE)
+    .select('image_path')
+    .eq('id', id)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+
+  if (item?.image_path) {
+    await supabase.storage.from(ANALYSIS_BUCKET).remove([item.image_path]);
+  }
+  await supabase.from(ANALYSIS_TABLE).delete().eq('id', id);
+}
+
+function fallbackSaveToLocal() {
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  const entry = {
+    id: Date.now(),
+    savedAt: new Date().toISOString(),
+    imageDataUrl: currentImageDataUrl,
+    ...currentAnalysisData,
+  };
+  history.unshift(entry);
+  if (history.length > 30) history.length = 30;
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
 
 // ==================== 작성 탭 ====================
 let selectedTarget = 'COLLEAGUE';
