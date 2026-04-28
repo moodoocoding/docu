@@ -1,13 +1,5 @@
 // messenger.js — 소통메신저 탭 전체 로직
-
-import {
-  callGemini,
-  getDocInstruction,
-  LOADING_MESSAGES_MESSENGER_ANALYZE,
-  LOADING_MESSAGES_MESSENGER_WRITE,
-  MESSENGER_SYSTEM_INSTRUCTION,
-  MESSENGER_ANALYZE_SYSTEM_INSTRUCTION,
-} from './gemini.js';
+// gemini.js의 함수들은 글로벌 스코프에서 직접 접근합니다.
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 

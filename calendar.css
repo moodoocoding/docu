@@ -1,0 +1,260 @@
+/* calendar.css — 학사일정 전용 스타일 */
+
+.calendar-container {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* --- 통계표 스타일 --- */
+.stats-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-title h2 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #4f46e5;
+}
+
+.semester-info {
+    font-size: 14px;
+    font-weight: 600;
+    background: #f0f9ff;
+    color: #0369a1;
+    padding: 4px 12px;
+    border-radius: 6px;
+}
+
+.stats-table-wrapper {
+    overflow-x: auto;
+}
+
+#statsTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    text-align: center;
+}
+
+#statsTable th, #statsTable td {
+    border: 1px solid #ddd;
+    padding: 6px 4px;
+    min-width: 45px;
+}
+
+#statsTable thead th {
+    background: #f8f9fa;
+    font-weight: 700;
+    color: #333;
+}
+
+#statsTable .total-col {
+    background: #dcfce7 !important;
+    font-weight: 800;
+    width: 60px;
+}
+
+/* 증감 행 강조 */
+.diff-row {
+    color: #d97706;
+    font-weight: 700;
+    background: #fffbeb;
+}
+
+/* --- 탭 스타일 --- */
+.period-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    background: #4f46e5;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    background: #4338ca;
+}
+
+.tab-btn.active {
+    background: #1e1b4b;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* --- 시간표 그리드 스타일 --- */
+.timetable-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.week-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.week-header {
+    background: #f1f5f9;
+    padding: 8px;
+    text-align: center;
+    font-weight: 800;
+    color: #1e293b;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.week-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.week-table th, .week-table td {
+    border: 1px solid #e2e8f0;
+    height: 28px;
+    text-align: center;
+    font-size: 12px;
+    padding: 0;
+    cursor: pointer;
+}
+
+.week-table th {
+    background: #fff;
+    font-weight: 600;
+}
+
+/* 요일별 색상 */
+.day-sat { color: #2563eb; }
+.day-sun { color: #ef4444; }
+
+/* 이미지의 특수 상태 색상 */
+.cell-holiday { background: #ef4444 !important; color: #fff; }
+.cell-makeup { background: #f97316 !important; color: #fff; }
+.cell-sat-bg { background: #fbbf24 !important; }
+
+.period-num {
+    background: #f8fafc;
+    font-weight: 700;
+    color: #64748b;
+    width: 24px;
+}
+
+.subject-cell:hover {
+    background: #f1f5f9;
+}
+
+/* --- 모달 스타일 --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.palette-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.palette-group h4 {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 8px;
+    padding-left: 4px;
+    border-left: 3px solid #4f46e5;
+}
+
+.palette-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.palette-btn {
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.palette-btn:hover { background: #f1f5f9; border-color: #4f46e5; color: #4f46e5; }
+
+/* 통계표 이중 헤더 보정 */
+#statsTable th {
+    vertical-align: middle;
+}
+#statsTable tr:first-child th {
+    background: #f1f5f9;
+}
+
+.custom-input {
+    display: flex;
+    gap: 8px;
+}
+
+.custom-input input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.btn-primary { background: #4f46e5; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+.btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .timetable-grid { grid-template-columns: 1fr; }
+}

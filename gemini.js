@@ -1,6 +1,6 @@
 // gemini.js — Gemini API 호출 + 시스템 인스트럭션
 
-export const SYSTEM_INSTRUCTION = `
+const SYSTEM_INSTRUCTION = `
 당신은 대한민국 학교 행정 전문가이자 공문서 작성의 달인입니다.
 사용자의 요청에 따라 '에듀파인(기안문)', '계획서', '보고서', '가정통신문', '학부모 안내 문자', '지출품의서', '협의회 회의록', '홍보/보도자료'를 작성해야 합니다.
 
@@ -35,7 +35,7 @@ export const SYSTEM_INSTRUCTION = `
    - 세부추진계획에 일정표가 필요한 경우에도 표를 활용하세요.
 `;
 
-export const LOADING_MESSAGES = [
+const LOADING_MESSAGES = [
   "요청하신 내용으로 초안 작성 중...",
   "공문서 표준 번호 체계 및 서식 적용 중...",
   "본문 들여쓰기 및 가독성 최적화 중...",
@@ -43,28 +43,28 @@ export const LOADING_MESSAGES = [
   "최종 문서 생성 중. 잠시만 기다려주세요..."
 ];
 
-export const LOADING_MESSAGES_MESSAGE = [
+const LOADING_MESSAGES_MESSAGE = [
   "요청하신 내용으로 문자 초안 작성 중...",
   "학부모 대상 어조 및 표현 다듬는 중...",
   "글자 수 및 분량 확인 중...",
   "최종 문자 메시지 생성 중. 잠시만 기다려주세요..."
 ];
 
-export const LOADING_MESSAGES_MESSENGER_ANALYZE = [
+const LOADING_MESSAGES_MESSENGER_ANALYZE = [
   "스크린샷에서 메신저 내용 추출 중...",
   "수신 날짜 및 발신자 분석 중...",
   "주요 내용 요약 및 조치사항 정리 중...",
   "분석 결과 생성 중. 잠시만 기다려주세요..."
 ];
 
-export const LOADING_MESSAGES_MESSENGER_WRITE = [
+const LOADING_MESSAGES_MESSENGER_WRITE = [
   "메신저 작성 맥락 파악 중...",
   "수신 대상에 맞는 톤앤매너 적용 중...",
   "가독성 최적화 및 핵심 포인트 강조 중...",
   "최종 메신저 쪽지 완성 중. 잠시만 기다려주세요..."
 ];
 
-export const MESSENGER_SYSTEM_INSTRUCTION = `# Role: 초등교사 행정 업무 및 소통 전문 비서
+const MESSENGER_SYSTEM_INSTRUCTION = `# Role: 초등교사 행정 업무 및 소통 전문 비서
 
 ## Profile
 - 대상 사용자: 대한민국 초등학교 교사
@@ -93,7 +93,7 @@ export const MESSENGER_SYSTEM_INSTRUCTION = `# Role: 초등교사 행정 업무 
 - \`**\`나 \`#\` 같은 마크다운 기호 절대 금지.
 `;
 
-export const MESSENGER_ANALYZE_SYSTEM_INSTRUCTION = `당신은 학교 소통메신저 스크린샷을 분석하는 전문가입니다. 이미지를 분석하여 요청된 JSON 형식으로만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.`;
+const MESSENGER_ANALYZE_SYSTEM_INSTRUCTION = `당신은 학교 소통메신저 스크린샷을 분석하는 전문가입니다. 이미지를 분석하여 요청된 JSON 형식으로만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.`;
 
 const NUMBERING_RULE = `
 [항목 기호 준수사항]
@@ -109,7 +109,7 @@ const NUMBERING_RULE = `
 - 들여쓰기 최종 처리는 웹앱의 한글 복사용 변환 함수에서 자동 적용합니다.
 `;
 
-export function getDocInstruction(type, opts) {
+function getDocInstruction(type, opts) {
   const y = opts.schoolYear || '2026';
   const gt = opts.gongmunType || 'INTERNAL';
   const gc = opts.complexity || 'MEDIUM';
@@ -329,6 +329,30 @@ JSON 외 다른 텍스트는 절대 포함하지 마세요.
       volume = `[분량] 보도자료 A4 ${pc}장 + 하단 SNS 홍보글(짧게).`;
       specific = '작업: [홍보/보도자료 작성]\n표준 보도자료(5W1H) + 관계자 인터뷰 인용구. 문체: ~했다, ~밝혔다. 하단에 [SNS 홍보용 요약] 추가(이모지, #해시태그 3~5개).';
       break;
+
+    case 'CALENDAR_ANALYZE':
+      specific = `당신은 초등학교 학사일정 및 시간표 분석 전문가입니다.
+이미지 또는 PDF 파일을 분석하여 연간 시간표 데이터를 추출하세요.
+
+[출력 형식]
+반드시 아래 JSON 형식으로만 응답하세요. 다른 설명은 절대 금지합니다.
+{
+  "schedule": {
+    "YYYY-MM-DD-교시": "과목명",
+    ...
+  },
+  "allocation": {
+    "과목명": 시수,
+    ...
+  }
+}
+
+[분석 규칙]
+1. 날짜와 교시(1~10)를 매칭하여 과목명을 추출하세요.
+2. '창체'의 하위 항목(자율, 동아리, 진로)이 있다면 각각 추출하세요.
+3. 공휴일이나 행사는 과목명 대신 해당 명칭을 넣으세요.
+4. 연도는 기본적으로 2026년으로 가정하며, 이미지에 다른 연도가 명시되어 있다면 그에 따르세요.`;
+      break;
   }
 
   const s = opts.settings || {};
@@ -349,7 +373,7 @@ JSON 외 다른 텍스트는 절대 포함하지 마세요.
   return `${specific}\n${volume}\n${common}`;
 }
 
-export async function callGemini(apiKey, promptContext, docInstruction, fileDataList, customSysInstruction = null) {
+async function callGemini(apiKey, promptContext, docInstruction, fileDataList, customSysInstruction = null) {
   const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-latest'];
   let lastError = '';
 
@@ -413,3 +437,15 @@ export async function callGemini(apiKey, promptContext, docInstruction, fileData
 
   throw new Error(lastError || 'AI 문서 생성 중 오류가 발생했습니다. API 키를 확인해주세요.');
 }
+
+// 글로벌 등록
+window.SYSTEM_INSTRUCTION = SYSTEM_INSTRUCTION;
+window.LOADING_MESSAGES = LOADING_MESSAGES;
+window.LOADING_MESSAGES_MESSAGE = LOADING_MESSAGES_MESSAGE;
+window.LOADING_MESSAGES_MESSENGER_ANALYZE = LOADING_MESSAGES_MESSENGER_ANALYZE;
+window.LOADING_MESSAGES_MESSENGER_WRITE = LOADING_MESSAGES_MESSENGER_WRITE;
+window.MESSENGER_SYSTEM_INSTRUCTION = MESSENGER_SYSTEM_INSTRUCTION;
+window.MESSENGER_ANALYZE_SYSTEM_INSTRUCTION = MESSENGER_ANALYZE_SYSTEM_INSTRUCTION;
+window.getDocInstruction = getDocInstruction;
+window.callGemini = callGemini;
+
