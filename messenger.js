@@ -325,42 +325,53 @@ function displayAnalysisResult(data) {
     let location = encodeURIComponent(sch.location || '');
     
     let datesParam = '';
-    // 날짜 정보 결정 (추출된 일정 날짜 -> 메시지 수신 날짜 -> 조치사항 날짜 -> 오늘)
-    let targetDateStr = sch.date || info.date || data.date;
+    // 날짜 정보 결정 (추출된 일정 날짜 -> 조치사항 마감일 -> 메시지 수신 날짜 -> 오늘)
     let parsedDate = null;
     
-    // 1. 기존 날짜 정보(sch.date 등)에서 파싱 시도
-    if (targetDateStr) {
-      const isoMatch = targetDateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
-      const koMatchFull = targetDateStr.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
-      const koMatchShort = targetDateStr.match(/(\d{1,2})월\s*(\d{1,2})일/);
+    // 1. AI가 이미 추출한 구체적인 일정 날짜(sch.date)가 있는지 확인
+    if (sch && sch.date) {
+      const isoMatch = sch.date.match(/(\d{4})-(\d{2})-(\d{2})/);
+      const koMatchFull = sch.date.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+      const koMatchShort = sch.date.match(/(\d{1,2})월\s*(\d{1,2})일/);
       
-      if (isoMatch) {
-        parsedDate = new Date(isoMatch[1], parseInt(isoMatch[2])-1, isoMatch[3]);
-      } else if (koMatchFull) {
-        parsedDate = new Date(koMatchFull[1], parseInt(koMatchFull[2])-1, koMatchFull[3]);
-      } else if (koMatchShort) {
-        parsedDate = new Date(new Date().getFullYear(), parseInt(koMatchShort[1])-1, koMatchShort[2]);
-      }
+      if (isoMatch) parsedDate = new Date(isoMatch[1], parseInt(isoMatch[2])-1, isoMatch[3]);
+      else if (koMatchFull) parsedDate = new Date(koMatchFull[1], parseInt(koMatchFull[2])-1, koMatchFull[3]);
+      else if (koMatchShort) parsedDate = new Date(new Date().getFullYear(), parseInt(koMatchShort[1])-1, koMatchShort[2]);
     }
 
-    // 2. 파싱 실패했거나 정보가 없으면 조치사항에서 날짜 추출 시도
+    // 2. 조치사항에서 마감/제출 기한 키워드와 함께 있는 날짜 추출 시도
     if (!parsedDate || isNaN(parsedDate.getTime())) {
       if (req && req.length > 0) {
         for (const action of req) {
           const text = typeof action === 'string' ? action : (action.action || action);
-          const match = text.match(/(\d{1,2})월\s*(\d{1,2})일|(\d{1,2})\/(\d{1,2})|(\d{1,2})\.(\d{1,2})/);
-          if (match) {
-            const m = match[1] || match[3] || match[5];
-            const d = match[2] || match[4] || match[6];
-            parsedDate = new Date(new Date().getFullYear(), parseInt(m) - 1, parseInt(d));
-            break;
+          if (text.includes('제출') || text.includes('기한') || text.includes('마감') || text.includes('까지')) {
+            const match = text.match(/(\d{1,2})월\s*(\d{1,2})일|(\d{1,2})\/(\d{1,2})|(\d{1,2})\.(\d{1,2})/);
+            if (match) {
+              const m = match[1] || match[3] || match[5];
+              const d = match[2] || match[4] || match[6];
+              parsedDate = new Date(new Date().getFullYear(), parseInt(m) - 1, parseInt(d));
+              break;
+            }
           }
         }
       }
     }
 
-    // 3. 그래도 없으면 오늘 날짜 (안전장치)
+    // 3. 그래도 없으면 메시지 수신 날짜(info.date) 사용
+    if (!parsedDate || isNaN(parsedDate.getTime())) {
+      let targetDateStr = info.date || data.date;
+      if (targetDateStr) {
+        const isoMatch = targetDateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+        const koMatchFull = targetDateStr.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+        const koMatchShort = targetDateStr.match(/(\d{1,2})월\s*(\d{1,2})일/);
+        
+        if (isoMatch) parsedDate = new Date(isoMatch[1], parseInt(isoMatch[2])-1, isoMatch[3]);
+        else if (koMatchFull) parsedDate = new Date(koMatchFull[1], parseInt(koMatchFull[2])-1, koMatchFull[3]);
+        else if (koMatchShort) parsedDate = new Date(new Date().getFullYear(), parseInt(koMatchShort[1])-1, koMatchShort[2]);
+      }
+    }
+
+    // 4. 최후의 수단으로 오늘 날짜
     if (!parsedDate || isNaN(parsedDate.getTime())) {
       parsedDate = new Date();
     }
@@ -491,12 +502,6 @@ document.getElementById('saveAnalysisBtn')?.addEventListener('click', () => {
 function renderHistory() {
   let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
   
-  // 구버전 스키마 호환성 처리 (message_info가 없는 경우 초기화)
-  if (history.length > 0 && !history[0].message_info && !history[0].category) {
-    history = [];
-    localStorage.setItem(HISTORY_KEY, '[]');
-  }
-
   const list = document.getElementById('historyList');
 
   if (!history.length) {

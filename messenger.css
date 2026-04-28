@@ -139,6 +139,39 @@
   color: #ef4444;
 }
 
+/* ===== 우측 분석 내역 패널 ===== */
+.history-panel {
+  width: 320px;
+  min-width: 320px;
+  background: #fff;
+  border-left: 1px solid #e8eaf0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.history-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid #f0f0f5;
+  display: flex;
+  align-items: center;
+}
+.history-panel .history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+.history-panel .history-item {
+  margin-bottom: 8px;
+  border: 1px solid #f0f0f8;
+}
+.history-panel .history-item:last-child {
+  margin-bottom: 0;
+}
+.history-panel .history-item:hover {
+  border-color: #4f46e5;
+  background: #f8f7ff;
+}
+
 /* ===== 분석 결과 카드 ===== */
 .result-card {
   background: #fff;

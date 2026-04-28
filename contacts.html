@@ -8,55 +8,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="create.css">
   <link rel="stylesheet" href="contacts.css">
   <style>
-    /* 공통 헤더 스타일 복제 */
-    body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f8f9fa; }
-    header.main-header { background: #fff; border-bottom: 1px solid #e8eaf0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.06); height: 68px; display: flex; align-items: center; }
-    .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; width: 100%; display: flex; align-items: center; gap: 48px; }
-    .logo { font-size: 20px; font-weight: 800; color: #1a1a2e; text-decoration: none; display: flex; align-items: center; gap: 10px; }
-    .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg,#4f46e5,#7c3aed); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
-    nav { display: flex; gap: 24px; flex: 1; }
-    nav a { text-decoration: none; color: #444; font-size: 14px; font-weight: 500; padding: 8px 0; transition: all .2s; }
-    nav a:hover { color: #4f46e5; }
-    .header-actions { display: flex; gap: 8px; margin-left: auto; }
-    .header-btn { background: #4f46e5; color: #fff; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
-    
-    /* 드롭다운 스타일 */
-    .dropdown { position: relative; display: inline-block; }
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      background-color: #fff;
-      min-width: 140px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      z-index: 1000;
-      border-radius: 10px;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-top: 12px;
-      border: 1px solid #e8eaf0;
-      overflow: hidden;
-      padding: 6px 0;
-    }
-    .dropdown-content a {
-      color: #444 !important;
-      padding: 10px 16px !important;
-      text-decoration: none !important;
-      display: block !important;
-      font-size: 14px !important;
-      border-bottom: none !important;
-      transition: background 0.2s;
-      text-align: center;
-      font-weight: 500 !important;
-    }
-    .dropdown-content a:hover { background-color: #f5f3ff; color: #4f46e5 !important; }
-    .dropdown:hover .dropdown-content { display: block; }
-    .dropbtn { display: flex; align-items: center; gap: 4px; cursor: pointer; }
-    .dropbtn::after { content: '▾'; font-size: 10px; margin-left: 2px; opacity: 0.7; }
-    
     /* 주소록 전용 스타일 보정 */
+    body { margin: 0; font-family: 'Pretendard', sans-serif; background: #f8f9fa; }
     .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
     .contacts-header { margin-bottom: 30px; text-align: center; }
     .contacts-header h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 10px; }
@@ -64,10 +20,10 @@
   </style>
 </head>
 <body>
-  <header class="main-header">
+  <header>
     <div class="header-inner">
       <a href="index.html" class="logo">
-        <div class="logo-icon">A</div>
+        <div class="logo-icon">📋</div>
         학교문서AI
       </a>
       <nav>
@@ -76,11 +32,12 @@
         <a href="create.html?type=NEWSLETTER">가정통신문</a>
         <a href="create.html?type=MESSAGE">문자 답장</a>
         <a href="messenger.html">소통메신저</a>
-        <a href="contacts.html" style="color: #4f46e5; font-weight: 700;">주소록</a>
+        <a href="contacts.html" class="active">주소록</a>
         <a href="history.html">작성 내역</a>
         <div class="dropdown">
           <a href="#" class="dropbtn">개발중</a>
           <div class="dropdown-content">
+            <a href="create.html?type=CALENDAR">학사일정</a>
             <a href="create.html?type=REPORT">보고서</a>
             <a href="create.html?type=PROMOTION">보도자료</a>
           </div>

@@ -29,6 +29,7 @@
         <div class="dropdown">
           <a href="#" class="dropbtn">개발중</a>
           <div class="dropdown-content">
+            <a href="create.html?type=CALENDAR">학사일정</a>
             <a href="create.html?type=REPORT">보고서</a>
             <a href="create.html?type=PROMOTION">보도자료</a>
           </div>
@@ -79,18 +80,6 @@
             <span id="analyzingMsg">분석 중...</span>
           </span>
         </button>
-
-        <hr style="border:0; border-top:1px solid #e8eaf0; margin: 16px 0;">
-        
-        <div class="field" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 0;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 4px;">
-            <label style="margin: 0;">📁 분석 내역</label>
-            <button class="btn-clear" id="clearHistoryBtn">전체 삭제</button>
-          </div>
-          <div class="history-list" id="historyList" style="flex: 1; overflow-y: auto;">
-            <!-- 히스토리 아이템 렌더링 -->
-          </div>
-        </div>
       </div>
 
       <!-- 작성 폼 -->
@@ -240,6 +229,19 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- 우측 끝: 분석 내역 패널 -->
+    <div class="history-panel">
+      <div class="history-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <h3 style="font-size: 15px; font-weight: 700; color: #1a1a2e; margin: 0;">📁 분석 내역</h3>
+          <button class="btn-clear" id="clearHistoryBtn">전체 삭제</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList">
+        <!-- 히스토리 아이템 렌더링 -->
       </div>
     </div>
   </div>
