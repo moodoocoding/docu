@@ -293,71 +293,144 @@ function displayAnalysisResult(data) {
   const schSection = document.getElementById('scheduleSection');
   const addCalendarTopBtn = document.getElementById('addCalendarTopBtn');
   
+  // 일정 정보가 있을 때만 상세 영역 표시
   if (sch && sch.has_schedule) {
     document.getElementById('schTitle').textContent = sch.title || '일정 정보';
     document.getElementById('schDateTime').textContent = `${sch.date || ''} ${sch.start_time || ''} ${sch.end_time ? '~ ' + sch.end_time : ''}`.trim() || '미상';
     document.getElementById('schLocation').textContent = sch.location || '미상';
-    
     schSection.style.display = 'block';
-    addCalendarTopBtn.style.display = 'inline-block';
-
-    addCalendarTopBtn.onclick = () => {
-      let title = encodeURIComponent(sch.title || data.message_info?.subject || '새 일정');
-      
-      let detailsText = '📌 ' + (sch.title || '상세 내용') + '\n\n';
-      detailsText += summaryText;
-      if (req && req.length > 0) {
-        detailsText += '\n\n✅ 필수 조치사항\n';
-        req.forEach((actionText, i) => {
-          detailsText += `${i+1}. ${typeof actionText === 'string' ? actionText : (actionText.action || actionText)}\n`;
-        });
-      }
-      let details = encodeURIComponent(detailsText);
-      let location = encodeURIComponent(sch.location || '');
-      
-      let datesParam = '';
-      if (sch.date) {
-        const dateStr = sch.date.replace(/-/g, '');
-        let startStr = dateStr;
-        let endStr = dateStr;
-
-        if (sch.start_time) {
-          const st = sch.start_time.replace(/:/g, '');
-          startStr += `T${st}00`;
-          if (sch.end_time) {
-            const et = sch.end_time.replace(/:/g, '');
-            endStr += `T${et}00`;
-          } else {
-            let tempDate = new Date(`${sch.date}T${sch.start_time}:00`);
-            tempDate.setHours(tempDate.getHours() + 1);
-            const ey = tempDate.getFullYear();
-            const em = String(tempDate.getMonth()+1).padStart(2, '0');
-            const ed = String(tempDate.getDate()).padStart(2, '0');
-            const eh = String(tempDate.getHours()).padStart(2, '0');
-            const emm = String(tempDate.getMinutes()).padStart(2, '0');
-            endStr = `${ey}${em}${ed}T${eh}${emm}00`;
-          }
-          datesParam = `${startStr}/${endStr}`;
-        } else {
-          let tempDate = new Date(`${sch.date}T00:00:00`);
-          tempDate.setDate(tempDate.getDate() + 1);
-          const ey = tempDate.getFullYear();
-          const em = String(tempDate.getMonth()+1).padStart(2, '0');
-          const ed = String(tempDate.getDate()).padStart(2, '0');
-          endStr = `${ey}${em}${ed}`;
-          datesParam = `${startStr}/${endStr}`;
-        }
-      }
-      
-      let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
-      if (datesParam) url += `&dates=${datesParam}`;
-      
-      window.open(url, '_blank');
-    };
   } else {
     schSection.style.display = 'none';
-    addCalendarTopBtn.style.display = 'none';
   }
+
+  // 상단 일정 등록 버튼은 항상 표시 (분석 결과가 있을 때)
+  addCalendarTopBtn.style.display = 'inline-block';
+
+  addCalendarTopBtn.onclick = () => {
+    // 일정 제목 결정 (추출된 일정 제목 -> 메시지 제목 -> 기본값)
+    const eventTitle = sch.title || info.subject || data.subject || '새 일정';
+    let title = encodeURIComponent(eventTitle);
+    
+    // 상세 내용 구성
+    let detailsText = `📌 ${eventTitle}\n\n`;
+    detailsText += `📝 핵심 요약\n${summaryText}`;
+    
+    if (req && req.length > 0) {
+      detailsText += '\n\n✅ 필수 조치사항\n';
+      req.forEach((actionText, i) => {
+        detailsText += `${i+1}. ${typeof actionText === 'string' ? actionText : (actionText.action || actionText)}\n`;
+      });
+    }
+    let details = encodeURIComponent(detailsText);
+    let location = encodeURIComponent(sch.location || '');
+    
+    let datesParam = '';
+    // 날짜 정보 결정 (추출된 일정 날짜 -> 메시지 수신 날짜 -> 조치사항 날짜 -> 오늘)
+    let targetDateStr = sch.date || info.date || data.date;
+    let parsedDate = null;
+    
+    // 1. 기존 날짜 정보(sch.date 등)에서 파싱 시도
+    if (targetDateStr) {
+      const isoMatch = targetDateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+      const koMatchFull = targetDateStr.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+      const koMatchShort = targetDateStr.match(/(\d{1,2})월\s*(\d{1,2})일/);
+      
+      if (isoMatch) {
+        parsedDate = new Date(isoMatch[1], parseInt(isoMatch[2])-1, isoMatch[3]);
+      } else if (koMatchFull) {
+        parsedDate = new Date(koMatchFull[1], parseInt(koMatchFull[2])-1, koMatchFull[3]);
+      } else if (koMatchShort) {
+        parsedDate = new Date(new Date().getFullYear(), parseInt(koMatchShort[1])-1, koMatchShort[2]);
+      }
+    }
+
+    // 2. 파싱 실패했거나 정보가 없으면 조치사항에서 날짜 추출 시도
+    if (!parsedDate || isNaN(parsedDate.getTime())) {
+      if (req && req.length > 0) {
+        for (const action of req) {
+          const text = typeof action === 'string' ? action : (action.action || action);
+          const match = text.match(/(\d{1,2})월\s*(\d{1,2})일|(\d{1,2})\/(\d{1,2})|(\d{1,2})\.(\d{1,2})/);
+          if (match) {
+            const m = match[1] || match[3] || match[5];
+            const d = match[2] || match[4] || match[6];
+            parsedDate = new Date(new Date().getFullYear(), parseInt(m) - 1, parseInt(d));
+            break;
+          }
+        }
+      }
+    }
+
+    // 3. 그래도 없으면 오늘 날짜 (안전장치)
+    if (!parsedDate || isNaN(parsedDate.getTime())) {
+      parsedDate = new Date();
+    }
+
+    const ey = parsedDate.getFullYear();
+    const em = String(parsedDate.getMonth()+1).padStart(2, '0');
+    const ed = String(parsedDate.getDate()).padStart(2, '0');
+    const dateStr = `${ey}${em}${ed}`;
+    
+    let startStr = dateStr;
+    let endStr = dateStr;
+
+    if (sch && sch.start_time) {
+      let stH = 0, stM = 0;
+      let stMatch = sch.start_time.match(/(\d{1,2}):(\d{2})/);
+      if (stMatch) {
+        stH = parseInt(stMatch[1]);
+        stM = parseInt(stMatch[2]);
+      } else {
+        const hMatch = sch.start_time.match(/(\d{1,2})시/);
+        if (hMatch) stH = parseInt(hMatch[1]);
+        const mMatch = sch.start_time.match(/(\d{1,2})분/);
+        if (mMatch) stM = parseInt(mMatch[1]);
+        if (sch.start_time.includes('오후') && stH < 12) stH += 12;
+      }
+      
+      const stStrFormatted = String(stH).padStart(2, '0') + String(stM).padStart(2, '0') + '00';
+      startStr += `T${stStrFormatted}`;
+      
+      if (sch.end_time) {
+        let etH = stH + 1, etM = stM;
+        let etMatch = sch.end_time.match(/(\d{1,2}):(\d{2})/);
+        if (etMatch) {
+          etH = parseInt(etMatch[1]);
+          etM = parseInt(etMatch[2]);
+        } else {
+          const hMatch = sch.end_time.match(/(\d{1,2})시/);
+          if (hMatch) etH = parseInt(hMatch[1]);
+          const mMatch = sch.end_time.match(/(\d{1,2})분/);
+          if (mMatch) etM = parseInt(mMatch[1]);
+          if (sch.end_time.includes('오후') && etH < 12) etH += 12;
+        }
+        const etStrFormatted = String(etH).padStart(2, '0') + String(etM).padStart(2, '0') + '00';
+        endStr += `T${etStrFormatted}`;
+      } else {
+        let tempDate = new Date(parsedDate);
+        tempDate.setHours(stH + 1, stM);
+        const tey = tempDate.getFullYear();
+        const tem = String(tempDate.getMonth()+1).padStart(2, '0');
+        const ted = String(tempDate.getDate()).padStart(2, '0');
+        const teh = String(tempDate.getHours()).padStart(2, '0');
+        const temm = String(tempDate.getMinutes()).padStart(2, '0');
+        endStr = `${tey}${tem}${ted}T${teh}${temm}00`;
+      }
+      datesParam = `${startStr}/${endStr}`;
+    } else {
+      let tempDate = new Date(parsedDate);
+      tempDate.setDate(tempDate.getDate() + 1);
+      const tey = tempDate.getFullYear();
+      const tem = String(tempDate.getMonth()+1).padStart(2, '0');
+      const ted = String(tempDate.getDate()).padStart(2, '0');
+      endStr = `${tey}${tem}${ted}`;
+      datesParam = `${startStr}/${endStr}`;
+    }
+    
+    let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
+    if (datesParam) url += `&dates=${datesParam}`;
+    
+    window.open(url, '_blank');
+  };
 
   const fullTextSection = document.getElementById('fullTextSection');
   const fullTextEl = document.getElementById('resultFullText');
