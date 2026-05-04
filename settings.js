@@ -252,7 +252,7 @@ document.getElementById('saveBtn')?.addEventListener('click', async () => {
 
 // ===== 초기화 =====
 document.getElementById('resetBtn')?.addEventListener('click', async () => {
-  if (confirm('정말로 모든 설정과 작성 내역을 삭제하시겠습니까?')) {
+  if (confirm('정말로 모든 설정과 문서함을 삭제하시겠습니까?')) {
     localStorage.removeItem('schoolDocSettings');
     localStorage.removeItem('docHistory');
     

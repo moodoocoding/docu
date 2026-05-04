@@ -837,5 +837,5 @@ document.getElementById('saveWriteBtn')?.addEventListener('click', () => {
   });
   if (history.length > 30) history.length = 30;
   localStorage.setItem(WRITE_HISTORY_KEY, JSON.stringify(history));
-  showToast('💾 작성 내역이 저장되었습니다!');
+  showToast('💾 문서함에 저장되었습니다!');
 });

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>작성 내역 - 학교문서AI</title>
+<title>내 문서함 - 학교문서AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="create.css">
 <style>
@@ -61,7 +61,7 @@ body{font-family:'Pretendard',sans-serif;background:#f5f6fa;color:#1a1a2e;min-he
       <a href="create.html?type=MESSAGE">문자 답장</a>
       <a href="messenger.html">소통메신저</a>
       <a href="contacts.html">주소록</a>
-      <a href="history.html" class="active">작성 내역</a>
+      <a href="history.html" class="active">내 문서함</a>
       <a href="leading.html">선도학교</a>
       <div class="dropdown">
         <a href="#" class="dropbtn">개발중</a>
@@ -79,8 +79,8 @@ body{font-family:'Pretendard',sans-serif;background:#f5f6fa;color:#1a1a2e;min-he
 </header>
 
 <div class="container">
-  <h1 class="page-title">📂 작성 내역</h1>
-  <p class="page-desc">최근 작성한 문서 목록 (최대 50개, 브라우저에 저장)</p>
+  <h1 class="page-title">📂 내 문서함</h1>
+  <p class="page-desc">최근 작성한 문서를 보관하고 다시 열어볼 수 있는 공간입니다. (최대 50개)</p>
   <div id="historyContainer"></div>
 </div>
 
@@ -88,7 +88,7 @@ body{font-family:'Pretendard',sans-serif;background:#f5f6fa;color:#1a1a2e;min-he
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modalTitle">문서 미리보기</h3>
+      <h3 id="modalTitle">내 문서함 미리보기</h3>
       <button class="modal-close" id="modalClose">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>

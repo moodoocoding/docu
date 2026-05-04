@@ -7,12 +7,12 @@ let currentHtml = '';
 let currentItem = null;
 
 async function fetchHistory() {
-  container.innerHTML = '<div class="empty">데이터를 불러오는 중...</div>';
+  container.innerHTML = '<div class="empty">내 문서함을 불러오는 중...</div>';
   
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      container.innerHTML = '<div class="empty">로그인이 필요합니다.</div>';
+      container.innerHTML = '<div class="empty">내 문서함을 보려면 로그인이 필요합니다.</div>';
       return;
     }
 
@@ -33,7 +33,7 @@ async function fetchHistory() {
     render();
     const t = document.getElementById('toast');
     if (t) {
-      t.textContent = '⚠️ DB 연결 실패. 로컬 내역을 표시합니다.';
+      t.textContent = '⚠️ DB 연결 실패. 로컬 문서함을 표시합니다.';
       t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 2500);
     }
@@ -42,7 +42,7 @@ async function fetchHistory() {
 
 function render() {
   if (historyData.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="icon">📭</div><p>아직 작성한 문서가 없습니다.<br><a href="create.html?type=GONGMUN">문서 작성하러 가기 →</a></p></div>';
+    container.innerHTML = '<div class="empty"><div class="icon">📭</div><p>아직 문서함에 저장된 문서가 없습니다.<br><a href="create.html?type=GONGMUN">문서 작성하러 가기 →</a></p></div>';
     return;
   }
   
@@ -56,7 +56,7 @@ function render() {
         <div class="h-date">${dateStr}</div>
       </div>
       <div class="h-actions">
-        <button class="h-btn view-btn" data-idx="${i}">👁️ 보기</button>
+        <button class="h-btn view-btn" data-idx="${i}">👁️ 열기</button>
         <button class="h-btn del del-btn" data-idx="${i}">🗑️</button>
       </div>
     </div>`;
@@ -93,7 +93,7 @@ function closeModal() {
 }
 
 async function deleteItem(idx) {
-  if (confirm('이 문서를 삭제하시겠습니까?')) {
+  if (confirm('이 문서를 문서함에서 삭제하시겠습니까?')) {
     const item = historyData[idx];
     
     if (item.id && typeof item.id === 'string' && item.id.length > 20) { // UUID check
