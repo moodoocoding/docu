@@ -21,6 +21,7 @@ header{background:#fff;border-bottom:1px solid #e8eaf0;position:sticky;top:0;z-i
 .logo{font-size:20px;font-weight:800;color:#1a1a2e;text-decoration:none;display:flex;align-items:center;gap:10px;white-space:nowrap;flex:0 0 auto;}
 .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
 nav{display:flex;align-items:center;gap:18px;flex:1;min-width:0;}
+.nav-separator{display:inline-flex;align-items:center;color:#b9bfd1;font-weight:600;user-select:none;padding:0 2px;}
 nav a{text-decoration:none;color:#444;font-size:14px;font-weight:600;padding:8px 0;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;line-height:1.2;}
 nav a:hover{color:#4f46e5;border-bottom-color:#4f46e5;}
 .header-actions{display:flex;gap:8px;margin-left:auto;flex:0 0 auto;}
@@ -161,10 +162,11 @@ footer{background:#1a1a2e;color:#aaa;padding:48px 0;}
       <a href="create.html?type=GONGMUN">에듀파인</a>
       <a href="create.html?type=PLAN">계획서</a>
       <a href="create.html?type=NEWSLETTER">가정통신문</a>
+      <span class="nav-separator" aria-hidden="true">|</span>
       <a href="create.html?type=MESSAGE">문자 답장</a>
       <a href="messenger.html">소통메신저</a>
       <a href="contacts.html">주소록</a>
-      <a href="history.html">내 문서함</a>
+      <span class="nav-separator" aria-hidden="true">|</span>
       <a href="leading.html">선도학교</a>
       <div class="dropdown">
         <a href="#" class="dropbtn">개발중</a>
@@ -176,6 +178,7 @@ footer{background:#1a1a2e;color:#aaa;padding:48px 0;}
       </div>
     </nav>
     <div class="header-actions">
+      <a class="header-btn" href="history.html">내 문서함</a>
       <a class="header-btn" href="settings.html">학교 설정</a>
     </div>
   </div>
