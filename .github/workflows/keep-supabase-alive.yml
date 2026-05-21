@@ -12,18 +12,20 @@ jobs:
     steps:
       - name: Check Secrets and Ping Supabase
         run: |
-          URL="${{ secrets.SUPABASE_URL }}"
-          KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+          # Clean and sanitize secrets (remove spaces, newlines, carriage returns, and quotes)
+          URL=$(echo "${{ secrets.SUPABASE_URL }}" | xargs | tr -d '\r\n"')
+          KEY=$(echo "${{ secrets.SUPABASE_ANON_KEY }}" | xargs | tr -d '\r\n"')
           
-          # 1. Check if secrets are empty
+          # 1. Check if secrets are empty after sanitization
           if [ -z "$URL" ] || [ -z "$KEY" ]; then
-            echo "::error::SUPABASE_URL 또는 SUPABASE_ANON_KEY 비밀값이 GitHub Secrets에 등록되지 않았습니다."
+            echo "::error::SUPABASE_URL 또는 SUPABASE_ANON_KEY 비밀값이 GitHub Secrets에 등록되지 않았거나 비어 있습니다."
             echo "리포지토리의 [Settings] > [Secrets and variables] > [Actions] 메뉴에서 비밀값들을 꼭 먼저 등록해 주세요!"
             exit 1
           fi
           
           # 2. Trim trailing slashes from URL
           URL="${URL%/}"
+
           
           echo "Pinging Supabase at $URL/rest/v1/messenger_analysis_history to prevent auto-pause..."
           
