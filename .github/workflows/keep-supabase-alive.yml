@@ -10,17 +10,38 @@ jobs:
   ping_supabase:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase API
+      - name: Check Secrets and Ping Supabase
         run: |
-          echo "Pinging Supabase to prevent auto-pause..."
+          URL="${{ secrets.SUPABASE_URL }}"
+          KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+          
+          # 1. Check if secrets are empty
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::SUPABASE_URL 또는 SUPABASE_ANON_KEY 비밀값이 GitHub Secrets에 등록되지 않았습니다."
+            echo "리포지토리의 [Settings] > [Secrets and variables] > [Actions] 메뉴에서 비밀값들을 꼭 먼저 등록해 주세요!"
+            exit 1
+          fi
+          
+          # 2. Trim trailing slashes from URL
+          URL="${URL%/}"
+          
+          echo "Pinging Supabase at $URL/rest/v1/messenger_analysis_history to prevent auto-pause..."
+          
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
-            -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/messenger_analysis_history?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+            -X GET "$URL/rest/v1/messenger_analysis_history?select=id&limit=1" \
+            -H "apikey: $KEY" \
+            -H "Authorization: Bearer $KEY")
           
           echo "Supabase API returned HTTP status code: $RESPONSE"
-          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 400 ] || [ "$RESPONSE" -eq 401 ] || [ "$RESPONSE" -eq 406 ]; then
-            echo "Ping successful! Connection to database verified."
+          
+          # 3. Handle results
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 400 ]; then
+            echo "Ping successful! Connection verified."
+          elif [ "$RESPONSE" -eq 401 ] || [ "$RESPONSE" -eq 406 ]; then
+            # 401/406 means it hit the DB/PostgREST successfully but was rejected by RLS or Auth (which is perfectly normal for an anonymous keep-alive call and counts as active traffic)
+            echo "Ping successful! Hitting the database endpoints counted as active DB traffic (HTTP $RESPONSE)."
           else
-            echo "Warning: Received unexpected HTTP status $RESPONSE. Please check your Supabase credentials and table settings."
+            echo "::error::API 호출 실패 (HTTP $RESPONSE). Supabase URL이나 Key가 올바른지 확인해 주세요."
+            exit 1
           fi
+
