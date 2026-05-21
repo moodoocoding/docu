@@ -240,3 +240,47 @@ header p {
     gap: 1rem;
 }
 
+/* 주소록 모바일 반응형 웹 디자인 */
+@media (max-width: 768px) {
+    .contacts-app-container {
+        margin: 10px !important;
+        padding: 24px 16px !important;
+        border-radius: 12px !important;
+    }
+    .bulk-label-container {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    .grid-header {
+        display: none !important; /* 모바일에서는 테이블 헤더 숨김 */
+    }
+    .grid-row {
+        grid-template-columns: 1fr !important; /* 1열 세로 스택 */
+        gap: 8px !important;
+        position: relative !important;
+        padding: 16px 12px !important;
+    }
+    .grid-row input {
+        padding: 8px 10px !important;
+    }
+    .btn-icon {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        background: rgba(239, 68, 68, 0.05) !important;
+        color: var(--contacts-danger) !important;
+    }
+    .actions-row {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: stretch !important;
+    }
+    .actions-left {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    .btn {
+        justify-content: center !important;
+    }
+}
+

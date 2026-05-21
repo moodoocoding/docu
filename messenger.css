@@ -338,3 +338,43 @@
 .btn-copy-bubble:hover {
   background: rgba(255, 255, 255, 0.25);
 }
+
+/* 소통메신저 모바일 반응형 웹 디자인 */
+@media (max-width: 1024px) {
+  .history-panel {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-left: none !important;
+    border-top: 1px solid #e8eaf0 !important;
+    height: auto !important;
+    max-height: 400px !important; /* 분석 내역은 모바일에서 적당히 스크롤되게 설정 */
+  }
+  .history-header {
+    padding: 16px !important;
+  }
+  .result-top {
+    padding: 16px !important;
+  }
+  .result-sender-row {
+    padding: 12px 16px !important;
+  }
+  .result-subject {
+    padding: 12px 16px 6px !important;
+    font-size: 15px !important;
+  }
+  .result-section {
+    padding: 10px 16px !important;
+  }
+  .target-group {
+    flex-wrap: wrap !important;
+  }
+  .target-btn {
+    padding: 10px 6px !important;
+    font-size: 12px !important;
+  }
+  /* 메신저용 버블 최대 넓이 조절 */
+  .phone-body .msg-bubble {
+    max-width: 95% !important;
+    padding: 12px 16px !important;
+  }
+}
