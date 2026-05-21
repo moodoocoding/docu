@@ -1,0 +1,26 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Runs every 3 days at 00:00 UTC (9:00 AM KST) to keep the project active
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+
+jobs:
+  ping_supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase API
+        run: |
+          echo "Pinging Supabase to prevent auto-pause..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/messenger_analysis_history?select=id&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+          
+          echo "Supabase API returned HTTP status code: $RESPONSE"
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 400 ] || [ "$RESPONSE" -eq 401 ] || [ "$RESPONSE" -eq 406 ]; then
+            echo "Ping successful! Connection to database verified."
+          else
+            echo "Warning: Received unexpected HTTP status $RESPONSE. Please check your Supabase credentials and table settings."
+          fi
