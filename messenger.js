@@ -596,8 +596,8 @@ function renderHistoryList(history) {
   list.querySelectorAll('.history-item').forEach(el => {
     el.addEventListener('click', (e) => {
       if (e.target.classList.contains('history-del-btn')) return;
-      const id = parseInt(el.dataset.id);
-      const item = history.find(h => h.id === id);
+      const id = el.dataset.id;
+      const item = history.find(h => String(h.id) === String(id));
       if (!item) return;
       if (item.imageDataUrl) {
         screenshotPreview.src = item.imageDataUrl;
