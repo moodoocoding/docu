@@ -387,6 +387,36 @@ JSON 외 다른 텍스트는 절대 포함하지 마세요.
   return `${specific}\n${volume}\n${common}`;
 }
 
+// 클라이언트 측 세션 인메모리 쿨다운 상태 관리
+const clientCooldowns = {};
+
+function getClientOrderedModels(baseModels) {
+  const now = Date.now();
+  const active = [];
+  const cooling = [];
+
+  for (const model of baseModels) {
+    if (clientCooldowns[model] && clientCooldowns[model] > now) {
+      cooling.push(model);
+    } else {
+      active.push(model);
+    }
+  }
+  return [...active, ...cooling];
+}
+
+function setClientCooldown(model) {
+  clientCooldowns[model] = Date.now() + 5 * 60 * 1000; // 5분간 쿨다운
+  console.warn(`[Client Smart Fallback] ${model} enters 5-minute cooldown due to API failure.`);
+}
+
+function clearClientCooldown(model) {
+  if (clientCooldowns[model]) {
+    delete clientCooldowns[model];
+    console.log(`[Client Smart Fallback] ${model} cooldown cleared.`);
+  }
+}
+
 async function callGemini(apiKey, promptContext, docInstruction, fileDataList, customSysInstruction = null) {
   const useFunction = location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
   if (useFunction) {
@@ -410,6 +440,10 @@ async function callGemini(apiKey, promptContext, docInstruction, fileDataList, c
 
       const data = await response.json().catch(() => ({}));
       if (response.ok) {
+        // 서버에서 어떤 모델로 성공했는지 반환하면 클라이언트 쿨다운에도 반영
+        if (data.model) {
+          clearClientCooldown(data.model);
+        }
         return data.text || '';
       }
 
@@ -421,7 +455,8 @@ async function callGemini(apiKey, promptContext, docInstruction, fileDataList, c
     throw new Error(lastFunctionError || 'Function endpoint not found.');
   }
 
-  const models = ['gemini-3.1-flash-lite-preview', 'gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-latest'];
+  const baseModels = ['gemini-3.1-flash-lite-preview', 'gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-flash-latest'];
+  const orderedModels = getClientOrderedModels(baseModels);
   let lastError = '';
 
   const parts = [];
@@ -440,7 +475,7 @@ async function callGemini(apiKey, promptContext, docInstruction, fileDataList, c
     text: `${docInstruction}\n\n[입력 정보 및 요청사항]:\n${promptContext}`
   });
 
-  for (const model of models) {
+  for (const model of orderedModels) {
     try {
       console.log(`Trying model: ${model}`);
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
@@ -465,19 +500,28 @@ async function callGemini(apiKey, promptContext, docInstruction, fileDataList, c
       if (!res.ok) {
         const errJson = await res.json().catch(() => ({}));
         lastError = errJson.error?.message || `API Error ${res.status}`;
+        
+        // 429 Too Many Requests 등 장애 발생 시 클라이언트 쿨다운 설정
+        if (res.status === 429 || res.status >= 500) {
+          setClientCooldown(model);
+        }
         console.warn(`Model ${model} failed:`, lastError);
         continue;
       }
 
       const data = await res.json();
       const text = data.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || '';
-      if (text) return text;
+      if (text) {
+        clearClientCooldown(model); // 성공 시 쿨다운 해제
+        return text;
+      }
     } catch (e) {
       if (e.name === 'AbortError') {
         lastError = '요청 시간이 초과되었습니다(60초). 잠시 후 다시 시도해 주세요.';
       } else {
         lastError = e.message;
       }
+      setClientCooldown(model); // 에러 발생 시 쿨다운 설정
       console.warn(`Model ${model} error:`, e);
     }
   }

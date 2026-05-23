@@ -57,6 +57,36 @@ function extractBase64(dataUrl) {
   return dataUrl.split(',')[1];
 }
 
+// 클라이언트 측 세션 인메모리 이미지 모델 쿨다운 상태 관리
+const imageCooldowns = {};
+
+function getOrderedImageModels(baseModels) {
+  const now = Date.now();
+  const active = [];
+  const cooling = [];
+
+  for (const model of baseModels) {
+    if (imageCooldowns[model] && imageCooldowns[model] > now) {
+      cooling.push(model);
+    } else {
+      active.push(model);
+    }
+  }
+  return [...active, ...cooling];
+}
+
+function setImageCooldown(model) {
+  imageCooldowns[model] = Date.now() + 5 * 60 * 1000; // 5분간 쿨다운
+  console.warn(`[Client Image Smart Fallback] ${model} enters 5-minute cooldown.`);
+}
+
+function clearImageCooldown(model) {
+  if (imageCooldowns[model]) {
+    delete imageCooldowns[model];
+    console.log(`[Client Image Smart Fallback] ${model} cooldown cleared.`);
+  }
+}
+
 async function requestCharacterImage(model, prompt, file) {
   if (USE_NETLIFY_FUNCTION) {
     const functionBases = location.hostname.includes('vercel.app')
@@ -87,7 +117,8 @@ async function requestCharacterImage(model, prompt, file) {
                 }
               }]
             }
-          }]
+          }],
+          model: data.model // 성공한 모델 명 전달
         };
       }
 
@@ -162,13 +193,19 @@ async function generateCharacter() {
 
   let lastError = null;
   try {
-    const models = USE_NETLIFY_FUNCTION ? ['netlify-function'] : IMAGE_MODELS;
+    const models = USE_NETLIFY_FUNCTION ? ['netlify-function'] : getOrderedImageModels(IMAGE_MODELS);
     for (const model of models) {
       try {
         const data = await requestCharacterImage(model, DEFAULT_PROMPT, selectedFile);
         const imagePart = findGeneratedImage(data);
         if (!imagePart) {
           throw new Error('이미지 응답을 찾지 못했습니다.');
+        }
+
+        // 성공 피드백 반영
+        const usedModel = data.model || model;
+        if (usedModel && usedModel !== 'netlify-function') {
+          clearImageCooldown(usedModel);
         }
 
         const mimeType = imagePart.inlineData.mimeType || 'image/png';
@@ -182,6 +219,9 @@ async function generateCharacter() {
       } catch (error) {
         lastError = error;
         console.warn(`${model} failed`, error);
+        if (model !== 'netlify-function') {
+          setImageCooldown(model); // 실패 피드백 반영 (쿨다운 적용)
+        }
         if (isQuotaError(error)) break;
       }
     }
